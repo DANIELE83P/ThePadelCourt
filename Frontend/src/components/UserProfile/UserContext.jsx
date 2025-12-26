@@ -1,30 +1,25 @@
 /* eslint-disable react/prop-types */
-import { createContext, useState, useEffect, useContext } from "react";
-import { getUserProfile } from "../../api/api.js"; // Adjust the import path as needed
+import { createContext, useContext } from "react";
+import { useAuth } from "../../Contexts/AuthContext";
 
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  const [userData, setUserData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { user, profile, isLoggedIn } = useAuth();
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await getUserProfile();
-        setUserData(response.user);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Combine user and profile data for backward compatibility
+  const userData = user && profile ? {
+    name: profile.name,
+    email: user.email,
+    role: profile.role,
+    id: user.id,
+    created_at: profile.created_at
+  } : null;
 
-    fetchUserData();
-  }, [userData]);
+  const loading = !isLoggedIn && !user;
 
   return (
-    <UserContext.Provider value={{ userData, loading }}>
+    <UserContext.Provider value={{ userData, loading, user, profile }}>
       {children}
     </UserContext.Provider>
   );

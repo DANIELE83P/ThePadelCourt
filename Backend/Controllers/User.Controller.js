@@ -1,8 +1,6 @@
 const asyncHandler = require("../middlewares/AsyncHandler");
 const appError = require("../utils/AppError");
-const User = require("../models/User.Model");
-const bcrypt = require("bcrypt");
-const SALT_ROUNDS = 12;
+const { supabase } = require("../db/supabase");
 
 /**
  * @desc Get all users
@@ -11,9 +9,24 @@ const SALT_ROUNDS = 12;
  * @middleware verifyToken, isAdminOrOwner
  */
 exports.getUsers = asyncHandler(async (req, res, next) => {
-  const users = await User.find();
-  if (!users) return next(new appError("No Users"));
-  res.status(404).json({ length: users.length, Users: users });
+  try {
+    const { data: users, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      return next(new appError(error.message, 500));
+    }
+
+    if (!users || users.length === 0) {
+      return next(new appError("No Users found", 404));
+    }
+
+    res.status(200).json({ length: users.length, Users: users });
+  } catch (error) {
+    return next(new appError(error.message, 500));
+  }
 });
 
 /**
@@ -23,10 +36,47 @@ exports.getUsers = asyncHandler(async (req, res, next) => {
  * @middleware verifyToken
  */
 exports.getUser = asyncHandler(async (req, res, next) => {
-  const id = req.user.userId;
-  const user = await User.findById(id);
-  if (!user) return next(new appError("User not found"));
-  res.status(200).json({ user });
+  const userId = req.user.userId;
+
+  try {
+    const { data: user, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
+
+    if (error || !user) {
+      return next(new appError("User not found", 404));
+    }
+
+    // Get user's bookings
+    const { data: bookings, error: bookingsError } = await supabase
+      .from('bookings')
+      .select(`
+        *,
+        courts (
+          id,
+          name,
+          location,
+          price_per_hour
+        )
+      `)
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (bookingsError) {
+      console.error('Error fetching bookings:', bookingsError);
+    }
+
+    res.status(200).json({
+      user: {
+        ...user,
+        bookings: bookings || []
+      }
+    });
+  } catch (error) {
+    return next(new appError(error.message, 500));
+  }
 });
 
 /**
@@ -36,17 +86,36 @@ exports.getUser = asyncHandler(async (req, res, next) => {
  * @middleware verifyToken
  */
 exports.updateUser = asyncHandler(async (req, res, next) => {
-  const id = req.user.userId;
-  const user = await User.findById(id);
-  if (!user) return next(new appError("User not found"));
-  const { name, password } = req.body;
+  const userId = req.user.userId;
+  const { name } = req.body;
 
-  const updatedUser = await User.findByIdAndUpdate(
-    id,
-    { name, password },
-    { new: true }
-  );
-  res.status(200).json({ message: "User updated successfully", updatedUser });
+  if (!name) {
+    return next(new appError("Name is required", 400));
+  }
+
+  if (name.length < 4) {
+    return next(new appError("Name must be at least 4 characters", 400));
+  }
+
+  try {
+    const { data: updatedUser, error } = await supabase
+      .from('profiles')
+      .update({ name })
+      .eq('id', userId)
+      .select()
+      .single();
+
+    if (error) {
+      return next(new appError(error.message, 500));
+    }
+
+    res.status(200).json({
+      message: "User updated successfully",
+      updatedUser
+    });
+  } catch (error) {
+    return next(new appError(error.message, 500));
+  }
 });
 
 /**
@@ -56,22 +125,61 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
  * @middleware verifyToken
  */
 exports.ChangePassword = asyncHandler(async (req, res, next) => {
-  const id = req.user.userId;
-  const user = await User.findById(id);
-  if (!user) return next(new appError("User not found"));
+  const userId = req.user.userId;
+  const { oldPassword, newPassword } = req.body;
 
-  const { oldPassword, newPassword } = req.body; // Ensure to destructure oldPassword and newPassword
-  console.log(`old Password ${oldPassword} newPassword ${newPassword}`);
+  if (!oldPassword || !newPassword) {
+    return next(new appError("Old password and new password are required", 400));
+  }
 
-  const isMatchPassword = await bcrypt.compare(oldPassword, user.password);
-  if (!isMatchPassword) return next(new appError("Invalid Old Password"));
+  if (newPassword.length < 6) {
+    return next(new appError("New password must be at least 6 characters", 400));
+  }
 
-  const HashedNewPassword = await bcrypt.hash(newPassword, SALT_ROUNDS);
-  user.password = HashedNewPassword;
-  await user.save();
+  try {
+    // Get user email first
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
 
-  res.status(200).json({
-    status: "success",
-    message: "Password changed successfully",
-  });
+    if (profileError || !profile) {
+      return next(new appError("User not found", 404));
+    }
+
+    // Get user from auth
+    const { data: { user }, error: userError } = await supabase.auth.admin.getUserById(userId);
+
+    if (userError || !user) {
+      return next(new appError("User not found", 404));
+    }
+
+    // Verify old password by attempting to sign in
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: user.email,
+      password: oldPassword
+    });
+
+    if (signInError) {
+      return next(new appError("Invalid Old Password", 401));
+    }
+
+    // Update password using Supabase Auth
+    const { error: updateError } = await supabase.auth.admin.updateUserById(
+      userId,
+      { password: newPassword }
+    );
+
+    if (updateError) {
+      return next(new appError(updateError.message, 500));
+    }
+
+    res.status(200).json({
+      status: "success",
+      message: "Password changed successfully",
+    });
+  } catch (error) {
+    return next(new appError(error.message, 500));
+  }
 });

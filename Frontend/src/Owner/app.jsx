@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
-import { MapPin, DollarSign, Edit, Trash2 } from "lucide-react";
+import { MapPin, DollarSign, Edit, Trash2, Copy } from "lucide-react";
 
-const Appp = ({ product, setEtit, openRemove }) => {
+const Appp = ({ product, setEtit, openRemove, openDuplicate }) => {
   const handleEdit = () => {
     setEtit(product);
   };
@@ -49,20 +49,29 @@ const Appp = ({ product, setEtit, openRemove }) => {
         </div>
       </div>
 
-      <div className="flex space-x-3">
+      <div className="flex flex-col space-y-2">
+        <div className="flex space-x-2">
+          <button
+            className="flex-1 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-lg py-2 hover:from-blue-700 hover:to-blue-600 transition-all transform hover:-translate-y-1 flex items-center justify-center text-sm"
+            onClick={handleEdit}
+          >
+            <Edit className="w-4 h-4 mr-1" />
+            Edit
+          </button>
+          <button
+            className="flex-1 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-lg py-2 hover:from-red-700 hover:to-red-600 transition-all transform hover:-translate-y-1 flex items-center justify-center text-sm"
+            onClick={openRemove}
+          >
+            <Trash2 className="w-4 h-4 mr-1" />
+            Delete
+          </button>
+        </div>
         <button
-          className="flex-1 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-lg py-2 hover:from-blue-700 hover:to-blue-600 transition-all transform hover:-translate-y-1 flex items-center justify-center"
-          onClick={handleEdit}
+          className="w-full bg-gradient-to-r from-green-600 to-green-500 text-white rounded-lg py-2 hover:from-green-700 hover:to-green-600 transition-all transform hover:-translate-y-1 flex items-center justify-center text-sm"
+          onClick={openDuplicate}
         >
-          <Edit className="w-5 h-5 mr-2" />
-          Edit
-        </button>
-        <button
-          className="flex-1 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-lg py-2 hover:from-red-700 hover:to-red-600 transition-all transform hover:-translate-y-1 flex items-center justify-center"
-          onClick={openRemove}
-        >
-          <Trash2 className="w-5 h-5 mr-2" />
-          Delete
+          <Copy className="w-4 h-4 mr-1" />
+          Duplicate
         </button>
       </div>
     </div>

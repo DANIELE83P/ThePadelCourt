@@ -1,16 +1,14 @@
-import { useContext, useState } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom"; // Import Link from react-router-dom
-import { AuthContext } from "../Contexts/AuthContext";
-import Cookies from "js-cookie";
+import { useState } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "../Contexts/AuthContext";
 
 const Navbar = () => {
-  const { isLoggedIn, setIsLoggedIn, userRole } = useContext(AuthContext);
+  const { isLoggedIn, userRole, signOut, profile } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
 
-  function handleLogout() {
-    Cookies.remove("token");
-    setIsLoggedIn(false);
+  async function handleLogout() {
+    await signOut();
     navigate("/login");
   }
 
@@ -44,50 +42,46 @@ const Navbar = () => {
             </svg>
           </button>
         </div>
-        
-        
+
+
         {/* Center (Links) for medium and large screens */}
         {isLoggedIn && (
           <div className="hidden md:flex items-center space-x-6">
             <NavLink
-        to="/"
-        className={({ isActive }) =>
-          `flex items-center  text-lime-300 text-lg font-bold hover:text-green-600 transition duration-300 p-2 rounded-lg hover:bg-gray-300 ${
-            isActive ? "bg-gray-500" : ""
-          }`
-        }
-      >
+              to="/"
+              className={({ isActive }) =>
+                `flex items-center  text-lime-300 text-lg font-bold hover:text-green-600 transition duration-300 p-2 rounded-lg hover:bg-gray-300 ${isActive ? "bg-gray-500" : ""
+                }`
+              }
+            >
               Home
             </NavLink>
             <NavLink
-        to="/courts"
-        className={({ isActive }) =>
-          `flex items-center  text-lime-300 text-lg font-bold hover:text-green-600 transition duration-300 p-2 rounded-lg hover:bg-gray-300 ${
-            isActive ? "bg-gray-500" : ""
-          }`
-        }
-      >
+              to="/courts"
+              className={({ isActive }) =>
+                `flex items-center  text-lime-300 text-lg font-bold hover:text-green-600 transition duration-300 p-2 rounded-lg hover:bg-gray-300 ${isActive ? "bg-gray-500" : ""
+                }`
+              }
+            >
               Courts
             </NavLink>
             <NavLink
-        to="/profile"
-        className={({ isActive }) =>
-          `flex items-center  text-lime-300 text-lg font-bold hover:text-green-600 transition duration-300 p-2 rounded-lg hover:bg-gray-300 ${
-            isActive ? "bg-gray-500" : ""
-          }`
-        }
-      >
+              to="/profile"
+              className={({ isActive }) =>
+                `flex items-center  text-lime-300 text-lg font-bold hover:text-green-600 transition duration-300 p-2 rounded-lg hover:bg-gray-300 ${isActive ? "bg-gray-500" : ""
+                }`
+              }
+            >
               Profile
             </NavLink>
             {userRole === "owner" && (
-               <NavLink
-               to="/ownerpage"
-               className={({ isActive }) =>
-                 `flex items-center  text-lime-300 text-lg font-bold hover:text-green-600 transition duration-300 p-2 rounded-lg hover:bg-gray-300 ${
-                   isActive ? "bg-gray-500" : ""
-                 }`
-               }
-             >
+              <NavLink
+                to="/ownerpage"
+                className={({ isActive }) =>
+                  `flex items-center  text-lime-300 text-lg font-bold hover:text-green-600 transition duration-300 p-2 rounded-lg hover:bg-gray-300 ${isActive ? "bg-gray-500" : ""
+                  }`
+                }
+              >
                 MyCourts
               </NavLink>
             )}
@@ -126,53 +120,49 @@ const Navbar = () => {
       {isMenuOpen && (
         <div className="md:hidden flex flex-col items-center space-y-4 mt-4 bg-white p-4 rounded-lg shadow-lg border border-gray-200">
           <NavLink
-        to="/"
-        onClick={() => setIsMenuOpen(false)}
-        className={({ isActive }) =>
-          `flex items-center  text-lime-300 text-lg font-bold hover:text-green-600 transition duration-300 p-2 rounded-lg hover:bg-gray-300 ${
-            isActive ? "bg-gray-500" : ""
-          }`
-        }
-            
+            to="/"
+            onClick={() => setIsMenuOpen(false)}
+            className={({ isActive }) =>
+              `flex items-center  text-lime-300 text-lg font-bold hover:text-green-600 transition duration-300 p-2 rounded-lg hover:bg-gray-300 ${isActive ? "bg-gray-500" : ""
+              }`
+            }
+
           >
             Home
           </NavLink>
           <NavLink
-        to="courts"
-        onClick={() => setIsMenuOpen(false)}
-        className={({ isActive }) =>
-          `flex items-center  text-lime-300 text-lg font-bold hover:text-green-600 transition duration-300 p-2 rounded-lg hover:bg-gray-300 ${
-            isActive ? "bg-gray-500" : ""
-          }`
-        }
-            
+            to="courts"
+            onClick={() => setIsMenuOpen(false)}
+            className={({ isActive }) =>
+              `flex items-center  text-lime-300 text-lg font-bold hover:text-green-600 transition duration-300 p-2 rounded-lg hover:bg-gray-300 ${isActive ? "bg-gray-500" : ""
+              }`
+            }
+
           >
             Courts
           </NavLink>
           <NavLink
-        to="profile/settings"
-        onClick={() => setIsMenuOpen(false)}
-        className={({ isActive }) =>
-          `flex items-center  text-lime-300 text-lg font-bold hover:text-green-600 transition duration-300 p-2 rounded-lg hover:bg-gray-300 ${
-            isActive ? "bg-gray-500" : ""
-          }`
-        }
-            
+            to="profile/settings"
+            onClick={() => setIsMenuOpen(false)}
+            className={({ isActive }) =>
+              `flex items-center  text-lime-300 text-lg font-bold hover:text-green-600 transition duration-300 p-2 rounded-lg hover:bg-gray-300 ${isActive ? "bg-gray-500" : ""
+              }`
+            }
+
           >
             Profile
           </NavLink>
 
           {userRole === "owner" && (
-             <NavLink
-             to="/ownerpage"
-             onClick={() => setIsMenuOpen(false)}
-             className={({ isActive }) =>
-               `flex items-center  text-lime-300 text-lg font-bold hover:text-green-600 transition duration-300 p-2 rounded-lg hover:bg-gray-300 ${
-                 isActive ? "bg-gray-500" : ""
-               }`
-             }
-                 
-               >
+            <NavLink
+              to="/ownerpage"
+              onClick={() => setIsMenuOpen(false)}
+              className={({ isActive }) =>
+                `flex items-center  text-lime-300 text-lg font-bold hover:text-green-600 transition duration-300 p-2 rounded-lg hover:bg-gray-300 ${isActive ? "bg-gray-500" : ""
+                }`
+              }
+
+            >
               MyCourts
             </NavLink>
           )}

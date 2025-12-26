@@ -7,12 +7,14 @@ const courtRoutes = require("./routes/Courts.Route");
 const bookingRoutes = require("./routes/Booking.Route");
 const route = require("./Routs/Rout.js");
 const userRoutes = require("./routes/User.Route.js");
-const ConnectToDb = require("./db/ConeectedToDb");
+const { supabase } = require("./db/supabase");
 const {
   NotFoundRoutes,
   GlobalErrorHandler,
 } = require("./middlewares/ErrorHandling");
+
 const app = express();
+
 app.use(
   cors({
     origin:
@@ -22,6 +24,7 @@ app.use(
     credentials: true,
   })
 );
+
 // Other middleware
 app.use(cookieParser());
 app.use(express.json());
@@ -38,9 +41,21 @@ app.use("/api", userRoutes);
 app.use(NotFoundRoutes);
 app.use(GlobalErrorHandler);
 
-// Connect To DB
+// Start server
 const Port = process.env.PORT || 4000;
-app.listen(Port, () => {
-  ConnectToDb();
-  console.log("Server Listening on Port", Port);
+app.listen(Port, async () => {
+  // Test Supabase connection
+  try {
+    const { data, error } = await supabase.from('profiles').select('count');
+    if (error) {
+      console.log('⚠️  Supabase connection warning:', error.message);
+    } else {
+      console.log('✅ Supabase connected successfully');
+    }
+  } catch (err) {
+    console.log('⚠️  Could not verify Supabase connection:', err.message);
+  }
+
+  console.log("🚀 Server Listening on Port", Port);
 });
+

@@ -2,44 +2,62 @@
 import { motion } from "framer-motion";
 import { User, Key, Mail } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { Signup } from "../api/api.js";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useState } from "react";
+import { useAuth } from "../Contexts/AuthContext";
+
 const SignUpForm = () => {
-  // State to hold server error messages
   const [serverError, setServerError] = useState(null);
-  // State to hold success message
   const [successMessage, setSuccessMessage] = useState(null);
-  // Hook for navigation
   const navigate = useNavigate();
+  const { signUp } = useAuth();
+
   const validationSchema = Yup.object({
-    name: Yup.string().required("Name is Required"),
+    name: Yup.string()
+      .min(4, "Name must be at least 4 characters")
+      .required("Name is Required"),
     email: Yup.string()
       .email("Invalid Email Format")
       .required("Email is Required"),
     password: Yup.string()
       .min(6, "Password must be at least 6 characters")
       .required("Password is Required"),
+    role: Yup.string()
+      .oneOf(['user', 'owner'], 'Please select a role')
+      .required("Role is Required"),
   });
 
   const handleSubmit = async (values) => {
     try {
-      const response = await Signup(values);
-      console.log("Signup Successful", response);
       setServerError(null);
-      // Set success message and navigate to login page after a delay
-      setSuccessMessage("Register done. Go and login");
+      setSuccessMessage(null);
+
+      const { data, error } = await signUp(
+        values.email,
+        values.password,
+        values.name,
+        values.role
+      );
+
+      if (error) {
+        if (error.message.includes('already registered')) {
+          setServerError("Email already registered. Please login instead.");
+        } else {
+          setServerError(error.message || "Registration failed");
+        }
+        return;
+      }
+
+      console.log("Signup Successful", data);
+      setSuccessMessage("Registration successful! Redirecting to login...");
+
       setTimeout(() => {
         navigate("/login");
       }, 2000);
     } catch (error) {
-      // Handle known and unexpected errors
-      if (error.response && error.response.status === 400) {
-        setServerError(error.response.data.Message); // Set server error message
-      } else {
-        setServerError("An unexpected error occurred."); // Default error message
-      }
+      console.error("Signup error:", error);
+      setServerError("An unexpected error occurred. Please try again.");
     }
   };
 
@@ -70,7 +88,7 @@ const SignUpForm = () => {
                   size={20}
                 />
                 <Field
-                  type="name"
+                  type="text"
                   className="w-full bg-white bg-opacity-10 text-white placeholder-white placeholder-opacity-70 rounded-xl py-3 px-10 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 transition duration-300"
                   placeholder="Name"
                   name="name"
@@ -78,7 +96,7 @@ const SignUpForm = () => {
                 <ErrorMessage
                   name="name"
                   component="p"
-                  className="error font-bold text-white"
+                  className="error font-bold text-white mt-1 text-sm"
                 />
               </div>
               <div className="mb-6 relative">
@@ -95,7 +113,7 @@ const SignUpForm = () => {
                 <ErrorMessage
                   name="email"
                   component="p"
-                  className="error font-bold text-white"
+                  className="error font-bold text-white mt-1 text-sm"
                 />
               </div>
               <div className="mb-8 relative">
@@ -112,31 +130,35 @@ const SignUpForm = () => {
                 <ErrorMessage
                   name="password"
                   component="p"
-                  className="error font-bold text-white"
+                  className="error font-bold text-white mt-1 text-sm"
                 />
               </div>
-              <div className="text-white  flex gap-2  items-center mb-4 font-bold">
-                <label>
-                  <Field type="radio" name="role" value="owner" />
+              <div className="text-white flex gap-4 items-center mb-4 font-bold">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <Field type="radio" name="role" value="owner" className="cursor-pointer" />
                   Owner
                 </label>
-                <label>
-                  <Field type="radio" name="role" value="user" />
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <Field type="radio" name="role" value="user" className="cursor-pointer" />
                   User
                 </label>
               </div>
+              <ErrorMessage
+                name="role"
+                component="p"
+                className="error font-bold text-white mb-4 text-sm"
+              />
 
               {/* Server Error Message */}
-
               {serverError && (
-                <p className="text-white mb-4 font-bold text-md mt-4">
+                <p className="text-red-400 mb-4 font-bold text-sm mt-4 bg-red-900 bg-opacity-30 p-3 rounded-lg">
                   {serverError}
                 </p>
               )}
 
               {/* Success Message */}
               {successMessage && (
-                <p className="text-green-500  mb-4 font-bold text-md text-sm mt-4">
+                <p className="text-green-400 mb-4 font-bold text-sm mt-4 bg-green-900 bg-opacity-30 p-3 rounded-lg">
                   {successMessage}
                 </p>
               )}
@@ -146,9 +168,9 @@ const SignUpForm = () => {
                 whileTap={{ scale: 0.98 }}
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-white text-black font-bold py-3 px-4 rounded-xl shadow-lg hover:bg-opacity-90 transition duration-300 flex items-center justify-center"
+                className="w-full bg-white text-black font-bold py-3 px-4 rounded-xl shadow-lg hover:bg-opacity-90 transition duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Sign Up
+                {isSubmitting ? "Signing Up..." : "Sign Up"}
               </motion.button>
             </Form>
           )}

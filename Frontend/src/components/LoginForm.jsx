@@ -2,14 +2,15 @@
 import { motion } from "framer-motion";
 import { User, Key, ArrowRight } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { Login } from "../api/api.js";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { useState, useContext } from "react";
-import { AuthContext } from "../Contexts/AuthContext.jsx";
+import { useState } from "react";
+import { useAuth } from "../Contexts/AuthContext";
+
 const LoginForm = () => {
-  const [errorMessage, setErrorMessage] = useState(null); // State to handle error messages
-  const { setIsLoggedIn } = useContext(AuthContext);
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
+  const { signIn } = useAuth();
   const navigate = useNavigate();
 
   const validationSchema = Yup.object({
@@ -18,21 +19,36 @@ const LoginForm = () => {
       .required("Email is Required"),
     password: Yup.string()
       .min(6, "Password must be at least 6 characters")
-      .required("Email is Required"),
+      .required("Password is Required"),
   });
 
   const handleSubmit = async (values) => {
     try {
-      await Login(values);
-      setIsLoggedIn(true);
-      setErrorMessage(null); // Clear any error messages
-      navigate("/", { replace: true });
-    } catch (error) {
-      if (error.response && error.response.status === 404) {
-        setErrorMessage(error.response.data.Message);
-      } else {
-        setErrorMessage("An unexpected error occurred.");
+      setErrorMessage(null);
+      setSuccessMessage(null);
+
+      const { data, error } = await signIn(values.email, values.password);
+
+      if (error) {
+        if (error.message.includes('Invalid login credentials')) {
+          setErrorMessage("Invalid email or password");
+        } else if (error.message.includes('Email not confirmed')) {
+          setErrorMessage("Please confirm your email before logging in");
+        } else {
+          setErrorMessage(error.message || "Login failed");
+        }
+        return;
       }
+
+      console.log("Login Successful", data);
+      setSuccessMessage("Login successful! Redirecting...");
+
+      setTimeout(() => {
+        navigate("/", { replace: true });
+      }, 1000);
+    } catch (error) {
+      console.error("Login error:", error);
+      setErrorMessage("An unexpected error occurred. Please try again.");
     }
   };
 
@@ -48,7 +64,7 @@ const LoginForm = () => {
           Login
         </h2>
         <Formik
-          initialValues={{ email: "f@gg.c", password: "123123" }}
+          initialValues={{ email: "", password: "" }}
           validationSchema={validationSchema}
           onSubmit={(values, { setSubmitting }) => {
             handleSubmit(values);
@@ -71,7 +87,7 @@ const LoginForm = () => {
                 <ErrorMessage
                   name="email"
                   component="p"
-                  className="error font-bold text-white"
+                  className="error font-bold text-white mt-1 text-sm"
                 />
               </div>
               <div className="mb-8 relative">
@@ -88,13 +104,21 @@ const LoginForm = () => {
                 <ErrorMessage
                   name="password"
                   component="p"
-                  className="error font-bold text-white"
+                  className="error font-bold text-white mt-1 text-sm"
                 />
               </div>
+
               {/* Display error messages if any */}
               {errorMessage && (
-                <p className="text-white mb-4 font-bold text-md mt-4">
+                <p className="text-red-400 mb-4 font-bold text-sm mt-4 bg-red-900 bg-opacity-30 p-3 rounded-lg">
                   {errorMessage}
+                </p>
+              )}
+
+              {/* Success Message */}
+              {successMessage && (
+                <p className="text-green-400 mb-4 font-bold text-sm mt-4 bg-green-900 bg-opacity-30 p-3 rounded-lg">
+                  {successMessage}
                 </p>
               )}
 
@@ -103,9 +127,9 @@ const LoginForm = () => {
                 whileTap={{ scale: 0.98 }}
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-white text-black font-bold py-3 px-4 rounded-xl shadow-lg hover:bg-opacity-90 transition duration-300 flex items-center justify-center"
+                className="w-full bg-white text-black font-bold py-3 px-4 rounded-xl shadow-lg hover:bg-opacity-90 transition duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Sign In
+                {isSubmitting ? "Signing In..." : "Sign In"}
                 <ArrowRight className="ml-2" size={20} />
               </motion.button>
             </Form>
