@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Trophy, Users, Calendar, Plus, MapPin, Shield, Star, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { matchService } from '../services/matchService';
+import { supabase } from '../lib/supabase';
 import { useAuth } from '../Contexts/AuthContext';
 import toast, { Toaster } from 'react-hot-toast';
 import CreateMatchModal from '../components/Competition/CreateMatchModal';
@@ -58,7 +59,22 @@ const MatchesPage = () => {
 
     useEffect(() => {
         fetchMatches();
-    }, []);
+
+        // Subscribe to real-time updates
+        const matchesSubscription = supabase
+            .channel('matches_realtime')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'matches' }, () => {
+                fetchMatches();
+            })
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'match_players' }, () => {
+                fetchMatches();
+            })
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(matchesSubscription);
+        };
+    }, [filter]);
 
     const handleJoin = async (matchId) => {
         try {
@@ -100,11 +116,11 @@ const MatchesPage = () => {
                     <div>
                         <div className="flex items-center gap-3 mb-2">
                             <span className="bg-lime-500/10 text-lime-500 text-xs font-black px-3 py-1 rounded-full border border-lime-500/20 uppercase tracking-widest">
-                                Match Center
+                                {t('comp_match_center')}
                             </span>
                         </div>
                         <h1 className="text-4xl md:text-5xl font-black text-white uppercase tracking-tighter">
-                            Partite <span className="text-lime-500">{filter === 'mine' ? 'Mie' : 'Aperte'}</span>
+                            Partite <span className="text-lime-500">{filter === 'mine' ? t('comp_my_matches').split(' ')[1] : t('comp_open_matches').split(' ')[1]}</span>
                         </h1>
                     </div>
 
@@ -128,7 +144,7 @@ const MatchesPage = () => {
                             className="group bg-lime-500 hover:bg-lime-400 text-black font-black py-4 px-8 rounded-2xl flex items-center justify-center gap-3 transition-all transform hover:scale-105 shadow-xl shadow-lime-500/20"
                         >
                             <Plus size={24} strokeWidth={3} className="group-hover:rotate-90 transition-transform" />
-                            Crea Sfida
+                            {t('comp_create_challenge')}
                         </button>
                     </div>
                 </header>
@@ -253,7 +269,7 @@ const MatchesPage = () => {
                                                 disabled={match.players?.length >= 4}
                                                 className="w-full bg-lime-500 hover:bg-lime-400 disabled:bg-gray-800 disabled:text-gray-600 text-black font-black py-4 rounded-2xl transition-all shadow-lg flex items-center justify-center gap-2 uppercase tracking-widest text-xs"
                                             >
-                                                {match.players?.length >= 4 ? 'Partita Piena' : 'Partecipa Ora'}
+                                                {match.players?.length >= 4 ? t('comp_match_full') : t('comp_join_now')}
                                             </button>
                                         )}
                                     </div>
@@ -281,6 +297,7 @@ const MatchesPage = () => {
                             setSelectedMatch(null);
                         }}
                         match={selectedMatch}
+                        user={user}
                         onSubmitted={fetchMatches}
                     />
                 )}

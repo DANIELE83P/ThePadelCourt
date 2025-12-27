@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Trophy, Calendar, Users, Star, Plus, Shield, Award, MapPin } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { tournamentService } from '../services/tournamentService';
 import { useAuth } from '../Contexts/AuthContext';
 import toast, { Toaster } from 'react-hot-toast';
@@ -41,7 +42,7 @@ const TournamentsPage = () => {
                             className="absolute -bottom-2 left-0 h-2 bg-lime-500 rounded-full"
                         />
                         <h1 className="text-6xl md:text-7xl font-black uppercase tracking-tighter italic leading-none">
-                            Arena <span className="text-lime-500">Tornei</span>
+                            {t('comp_arena_tournaments').split(' ')[0]} <span className="text-lime-500">{t('comp_arena_tournaments').split(' ')[1]}</span>
                         </h1>
                         <p className="text-gray-500 font-bold mt-4 uppercase tracking-widest text-sm flex items-center gap-2">
                             <Trophy size={16} className="text-lime-500" /> Vivi la Leggenda
@@ -133,9 +134,12 @@ const TournamentsPage = () => {
                                         </div>
                                     </div>
 
-                                    <button className="w-full bg-white group-hover:bg-lime-500 text-black font-black py-4 rounded-2xl transition-all shadow-xl uppercase tracking-widest text-xs">
-                                        Vedi Tabellone
-                                    </button>
+                                    <Link
+                                        to={`/tournament/${tournament.id}`}
+                                        className="block w-full text-center bg-white group-hover:bg-lime-500 text-black font-black py-4 rounded-2xl transition-all shadow-xl uppercase tracking-widest text-xs"
+                                    >
+                                        {t('comp_live_bracket')}
+                                    </Link>
                                 </div>
                             </motion.div>
                         ))}
@@ -150,7 +154,7 @@ const TournamentsPage = () => {
                     <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                         <div>
                             <h2 className="text-4xl md:text-5xl font-black text-white uppercase tracking-tighter italic mb-6">
-                                Scala la <span className="text-lime-500">Hall of Fame</span>
+                                Scala la <span className="text-lime-500">{t('comp_hall_of_fame')}</span>
                             </h2>
                             <p className="text-gray-400 text-lg font-medium mb-10 max-w-md">
                                 Ogni vittoria ti porta più vicino allo status di <span className="text-white">Legend</span>.

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { X, Calendar, Clock, Trophy, Users, Shield, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { supabase } from '../lib/supabase';
-import { matchService } from '../services/matchService';
+import { supabase } from '../../lib/supabase';
+import { matchService } from '../../services/matchService';
 import toast from 'react-hot-toast';
 
 const CreateMatchModal = ({ isOpen, onClose, user, onCreated }) => {

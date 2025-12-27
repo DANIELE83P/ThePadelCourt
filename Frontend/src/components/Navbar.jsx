@@ -94,6 +94,14 @@ const Navbar = () => {
               {t('navbar_tournaments')}
             </NavLink>
             <NavLink
+              to="/leagues"
+              className={({ isActive }) =>
+                `flex items-center text-lime-300 text-lg font-bold hover:text-green-600 transition duration-300 p-2 rounded-lg hover:bg-gray-300 ${isActive ? "bg-gray-500" : ""}`
+              }
+            >
+              {t('navbar_leagues')}
+            </NavLink>
+            <NavLink
               to="/profile"
               className={({ isActive }) =>
                 `flex items-center  text-lime-300 text-lg font-bold hover:text-green-600 transition duration-300 p-2 rounded-lg hover:bg-gray-300 ${isActive ? "bg-gray-500" : ""
@@ -199,6 +207,15 @@ const Navbar = () => {
             }
           >
             {t('navbar_tournaments')}
+          </NavLink>
+          <NavLink
+            to="/leagues"
+            onClick={() => setIsMenuOpen(false)}
+            className={({ isActive }) =>
+              `flex items-center text-lime-300 text-lg font-bold hover:text-green-600 transition duration-300 p-2 rounded-lg hover:bg-gray-300 ${isActive ? "bg-gray-500" : ""}`
+            }
+          >
+            {t('navbar_leagues')}
           </NavLink>
           <NavLink
             to="profile/settings"

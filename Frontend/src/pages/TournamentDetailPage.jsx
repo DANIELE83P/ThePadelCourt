@@ -1,27 +1,34 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Trophy, Calendar, Users, ChevronLeft, Shield, Award } from 'lucide-react';
 import { tournamentService } from '../services/tournamentService';
 import TournamentBracket from '../components/Competition/TournamentBracket';
-import { motion } from 'framer-motion';
+import RegisterTournamentModal from '../components/Competition/RegisterTournamentModal';
+import { useAuth } from '../Contexts/AuthContext';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const TournamentDetailPage = () => {
+    const { t } = useTranslation();
     const { id } = useParams();
     const navigate = useNavigate();
+    const { user } = useAuth();
     const [tournament, setTournament] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+
+    const fetchDetails = async () => {
+        try {
+            const data = await tournamentService.getTournamentDetails(id);
+            setTournament(data);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchDetails = async () => {
-            try {
-                const data = await tournamentService.getTournamentDetails(id);
-                setTournament(data);
-            } catch (error) {
-                console.error(error);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchDetails();
     }, [id]);
 
@@ -78,8 +85,11 @@ const TournamentDetailPage = () => {
                                     </div>
                                 </div>
                             </div>
-                            <button className="w-full bg-lime-500 hover:bg-lime-400 text-black font-black py-4 rounded-2xl transition-all shadow-xl mt-8 uppercase tracking-widest text-xs">
-                                Iscrivi Squadra
+                            <button
+                                onClick={() => setIsRegisterModalOpen(true)}
+                                className="w-full bg-lime-500 hover:bg-lime-400 text-black font-black py-4 rounded-2xl transition-all shadow-xl mt-8 uppercase tracking-widest text-xs"
+                            >
+                                {t('comp_register_team')}
                             </button>
                         </div>
                     </div>
@@ -88,7 +98,7 @@ const TournamentDetailPage = () => {
                 <div className="mb-20">
                     <div className="flex items-center gap-4 mb-10">
                         <Shield className="text-lime-500" />
-                        <h2 className="text-3xl font-black uppercase tracking-tighter italic">Tabellone <span className="text-lime-500">Live</span></h2>
+                        <h2 className="text-3xl font-black uppercase tracking-tighter italic">{t('comp_live_bracket').split(' ')[0]} <span className="text-lime-500">{t('comp_live_bracket').split(' ')[1]}</span></h2>
                     </div>
 
                     <div className="bg-gray-900/30 border border-gray-800 rounded-[3rem] overflow-hidden">
@@ -120,6 +130,18 @@ const TournamentDetailPage = () => {
                     </section>
                 </div>
             </div>
+
+            <AnimatePresence>
+                {isRegisterModalOpen && (
+                    <RegisterTournamentModal
+                        isOpen={isRegisterModalOpen}
+                        onClose={() => setIsRegisterModalOpen(false)}
+                        tournament={tournament}
+                        currentUser={user}
+                        onRegistered={fetchDetails}
+                    />
+                )}
+            </AnimatePresence>
         </div>
     );
 };

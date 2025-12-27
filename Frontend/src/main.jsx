@@ -26,6 +26,8 @@ import MatchesPage from "./pages/MatchesPage.jsx";
 import TournamentsPage from "./pages/TournamentsPage.jsx";
 import TournamentDetailPage from "./pages/TournamentDetailPage.jsx";
 import LeaderboardPage from "./pages/LeaderboardPage.jsx";
+import LeaguesPage from "./pages/LeaguesPage.jsx";
+import LeagueDetailPage from "./pages/LeagueDetailPage.jsx";
 
 const router = createBrowserRouter([
   // Owner Dashboard - Standalone route (no navbar/footer)
@@ -85,6 +87,30 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <TournamentsPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "tournament/:id",
+        element: (
+          <ProtectedRoute>
+            <TournamentDetailPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "leagues",
+        element: (
+          <ProtectedRoute>
+            <LeaguesPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "league/:id",
+        element: (
+          <ProtectedRoute>
+            <LeagueDetailPage />
           </ProtectedRoute>
         ),
       },

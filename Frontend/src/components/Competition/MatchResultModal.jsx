@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import { X, Trophy, AlertTriangle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { supabase } from '../../lib/supabase';
+import LevelUpEffect from './LevelUpEffect';
 import toast from 'react-hot-toast';
 
-const MatchResultModal = ({ isOpen, onClose, match, onSubmitted }) => {
+const MatchResultModal = ({ isOpen, onClose, match, user, onSubmitted }) => {
     const [loading, setLoading] = useState(false);
+    const [showLevelUp, setShowLevelUp] = useState(false);
+    const [newLevel, setNewLevel] = useState(0);
     const [scores, setScores] = useState({
         t1_s1: 6, t2_s1: 0,
         t1_s2: 6, t2_s2: 0,
@@ -15,7 +18,7 @@ const MatchResultModal = ({ isOpen, onClose, match, onSubmitted }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Simple logic to determine winner
+        // Determina il vincitore
         let t1_sets = 0;
         let t2_sets = 0;
 
@@ -29,6 +32,14 @@ const MatchResultModal = ({ isOpen, onClose, match, onSubmitted }) => {
 
         try {
             setLoading(true);
+
+            // Recupera livello attuale prima dell'invio
+            const { data: oldProfile } = await supabase
+                .from('profiles')
+                .select('level')
+                .eq('id', user.id)
+                .single();
+
             const { error } = await supabase
                 .from('match_results')
                 .insert([{
@@ -39,14 +50,33 @@ const MatchResultModal = ({ isOpen, onClose, match, onSubmitted }) => {
                     team2_score1: scores.t2_s1,
                     team2_score2: scores.t2_s2,
                     team2_score3: scores.t2_s3,
-                    winner_team: winner
+                    winner_team: winner,
+                    reported_by: user.id
                 }]);
 
             if (error) throw error;
 
+            // Recupera nuovo livello per vedere se è salito
+            const { data: newProfile } = await supabase
+                .from('profiles')
+                .select('level')
+                .eq('id', user.id)
+                .single();
+
             toast.success('Risultato inviato! Ranking aggiornato.');
-            onSubmitted();
-            onClose();
+
+            if (newProfile && oldProfile && newProfile.level > oldProfile.level) {
+                setNewLevel(newProfile.level);
+                setShowLevelUp(true);
+                // Aspetta che l'animazione finisca prima di chiudere
+                setTimeout(() => {
+                    onSubmitted();
+                    onClose();
+                }, 5000);
+            } else {
+                onSubmitted();
+                onClose();
+            }
         } catch (error) {
             console.error('Error reporting result:', error);
             toast.error('Errore nell\'invio del risultato');
@@ -152,6 +182,12 @@ const MatchResultModal = ({ isOpen, onClose, match, onSubmitted }) => {
                     </form>
                 </div>
             </motion.div>
+
+            <LevelUpEffect
+                newLevel={newLevel}
+                isOpen={showLevelUp}
+                onClose={() => setShowLevelUp(false)}
+            />
         </div>
     );
 };
