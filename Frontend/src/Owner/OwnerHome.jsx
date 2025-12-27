@@ -22,7 +22,10 @@ const OwnerHome = ({ onNavigate }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (user) fetchStats();
+        if (user) {
+            fetchStats();
+            // The daily scheduler (including reminders) is handled by OwnerLayout.jsx
+        }
     }, [user]);
 
     const fetchStats = async () => {

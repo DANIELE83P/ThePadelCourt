@@ -11,9 +11,9 @@ const ClubSettings = () => {
         address: "",
         phone: "",
         email: "",
-        hours_week: "",
-        hours_weekend: "",
-        map_url: ""
+        map_url: "",
+        city: "",
+        country: ""
     });
 
     useEffect(() => {
@@ -29,24 +29,23 @@ const ClubSettings = () => {
                 .from("club_profiles")
                 .select("*")
                 .eq("owner_id", user.id)
-                .single();
+                .maybeSingle();
 
-            if (error && error.code !== "PGRST116") {
-                throw error;
-            }
+            if (error) throw error;
 
             if (data) {
                 setFormData({
                     address: data.address || "",
                     phone: data.phone || "",
                     email: data.email || "",
-                    hours_week: data.hours_week || "",
-                    hours_weekend: data.hours_weekend || "",
-                    map_url: data.map_url || ""
+                    map_url: data.map_url || "",
+                    city: data.city || "",
+                    country: data.country || ""
                 });
             }
         } catch (error) {
             console.error("Error fetching club profile:", error);
+            toast.error("Errore nel caricamento del profilo");
         } finally {
             setLoading(false);
         }
@@ -74,7 +73,7 @@ const ClubSettings = () => {
             toast.success("Impostazioni salvate con successo!");
         } catch (error) {
             console.error("Error updating club profile:", error);
-            toast.error("Errore nel salvataggio");
+            toast.error(`Errore nel salvataggio: ${error.message || error.details || "Errore sconosciuto"}`);
         } finally {
             setSaving(false);
         }
@@ -134,34 +133,32 @@ const ClubSettings = () => {
                             className="w-full rounded-md p-2 border border-[var(--owner-border)] bg-[var(--owner-bg-primary)] focus:border-green-500 focus:ring-1 focus:ring-green-500"
                         />
                     </div>
+                    <div>
+                        <label className="block text-sm font-medium mb-1">Città</label>
+                        <input
+                            type="text"
+                            name="city"
+                            value={formData.city}
+                            onChange={handleChange}
+                            placeholder="Milano"
+                            className="w-full rounded-md p-2 border border-[var(--owner-border)] bg-[var(--owner-bg-primary)] focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium mb-1">Paese</label>
+                        <input
+                            type="text"
+                            name="country"
+                            value={formData.country}
+                            onChange={handleChange}
+                            placeholder="Italia"
+                            className="w-full rounded-md p-2 border border-[var(--owner-border)] bg-[var(--owner-bg-primary)] focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                        />
+                    </div>
                 </div>
 
-                <div className="border-t border-[var(--owner-border)] pt-4">
-                    <h3 className="text-lg font-medium mb-4">Orari di Apertura</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Giorni Feriali</label>
-                            <input
-                                type="text"
-                                name="hours_week"
-                                value={formData.hours_week}
-                                onChange={handleChange}
-                                placeholder="09:00 - 23:00"
-                                className="w-full rounded-md p-2 border border-[var(--owner-border)] bg-[var(--owner-bg-primary)] focus:border-green-500 focus:ring-1 focus:ring-green-500"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Weekend</label>
-                            <input
-                                type="text"
-                                name="hours_weekend"
-                                value={formData.hours_weekend}
-                                onChange={handleChange}
-                                placeholder="08:00 - 22:00"
-                                className="w-full rounded-md p-2 border border-[var(--owner-border)] bg-[var(--owner-bg-primary)] focus:border-green-500 focus:ring-1 focus:ring-green-500"
-                            />
-                        </div>
-                    </div>
+                <div className="text-sm text-[var(--owner-text-muted)] mt-4 p-4 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                    <p><strong>📍 Nota:</strong> Gli orari di apertura sono ora gestiti nella sezione <strong>Impostazioni → Orari Apertura</strong></p>
                 </div>
 
                 <div className="flex justify-end pt-4">

@@ -94,6 +94,27 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const signInWithOAuth = async (provider) => {
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: provider,
+        options: {
+          redirectTo: `${window.location.origin}/login`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
+        },
+      });
+
+      if (error) throw error;
+      return { data, error: null };
+    } catch (error) {
+      console.error(`Error signing in with ${provider}:`, error);
+      return { data: null, error };
+    }
+  };
+
   const signOut = async () => {
     try {
       const { error } = await supabase.auth.signOut();
@@ -155,6 +176,7 @@ export const AuthProvider = ({ children }) => {
     userRole: profile?.role || 'user',
     signUp,
     signIn,
+    signInWithOAuth,
     signOut,
     updateProfile,
     changePassword,

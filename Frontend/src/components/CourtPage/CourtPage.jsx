@@ -40,7 +40,7 @@ const CourtPage = () => {
   };
 
   // Handle search filtering for courts based on selected zone
-  const handleSearch = () => {
+  useEffect(() => {
     if (!searchZone) {
       setFilteredCourts(allCourts);
       return;
@@ -48,20 +48,12 @@ const CourtPage = () => {
 
     setFilteredCourts(
       allCourts.filter((court) => {
-        const isZoneMatch = court.location
-          ?.toLowerCase()
-          .includes(searchZone.toLowerCase());
-        return isZoneMatch;
+        if (searchZone === "indoor") return court.is_indoor === true;
+        if (searchZone === "outdoor") return court.is_indoor === false;
+        return true;
       })
     );
-  };
-
-  // Trigger search on Enter key press
-  const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
-      handleSearch();
-    }
-  };
+  }, [searchZone, allCourts]);
 
   // Reset filters
   const handleReset = () => {
@@ -83,34 +75,27 @@ const CourtPage = () => {
 
       {/* Search Filters */}
       <div className="mb-6 mr-3">
-        <div className="flex gap-2 flex-col md:flex-row md:space-x-2 mb-4">
-          <select
-            className="border rounded-lg p-2 flex-1"
-            value={searchZone}
-            onChange={(e) => setSearchZone(e.target.value)}
-            onKeyDown={handleKeyDown}
-          >
-            <option value="">{t('courts_all_locations')}</option>
-            {zones.map((zone, index) => (
-              <option key={index} value={zone}>
-                {zone}
-              </option>
-            ))}
-          </select>
-
-          <button
-            onClick={handleSearch}
-            className="bg-blue-500 text-white py-2 px-6 rounded-lg hover:bg-blue-600 transition-colors duration-300"
-          >
-            {t('courts_search')}
-          </button>
-
-          <button
-            onClick={handleReset}
-            className="bg-gray-500 text-white py-2 px-6 rounded-lg hover:bg-gray-600 transition-colors duration-300"
-          >
-            {t('courts_reset')}
-          </button>
+        <div className="flex gap-2 flex-col md:flex-row md:space-x-2 mb-4 justify-center">
+          <div className="flex gap-2">
+            <button
+              onClick={() => setSearchZone("")}
+              className={`py-2 px-6 rounded-full transition-colors duration-300 font-medium border ${!searchZone ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'}`}
+            >
+              Tutti
+            </button>
+            <button
+              onClick={() => setSearchZone("indoor")}
+              className={`py-2 px-6 rounded-full transition-colors duration-300 font-medium border ${searchZone === 'indoor' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'}`}
+            >
+              Indoor 🏠
+            </button>
+            <button
+              onClick={() => setSearchZone("outdoor")}
+              className={`py-2 px-6 rounded-full transition-colors duration-300 font-medium border ${searchZone === 'outdoor' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'}`}
+            >
+              Outdoor ☀️
+            </button>
+          </div>
         </div>
       </div>
 

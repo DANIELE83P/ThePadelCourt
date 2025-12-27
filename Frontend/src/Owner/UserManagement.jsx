@@ -8,9 +8,11 @@ import {
     CreditCard,
     MoreVertical,
     Shield,
-    Trash2
+    Trash2,
+    UserPlus
 } from "lucide-react";
 import AssignCardModal from "./AssignCardModal";
+import { notify } from "../utils/notification";
 
 const UserManagement = () => {
     const { user: currentUser } = useAuth();
@@ -22,6 +24,18 @@ const UserManagement = () => {
     const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
 
+    // Create User Modal
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [newUserData, setNewUserData] = useState({
+        first_name: "",
+        last_name: "",
+        email: "",
+        phone: "",
+        birth_date: "",
+        password: ""
+    });
+    const [creating, setCreating] = useState(false);
+
     useEffect(() => {
         fetchUsers();
     }, []);
@@ -32,7 +46,7 @@ const UserManagement = () => {
             const { data, error } = await supabase
                 .from('profiles')
                 .select('*')
-                .eq('role', 'user') // Only fetch regular users
+                .eq('role', 'user')
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
@@ -53,7 +67,6 @@ const UserManagement = () => {
 
             if (error) throw error;
 
-            // Optimistic update
             setUsers(users.map(u =>
                 u.id === userId ? { ...u, is_blocked: !currentStatus } : u
             ));
@@ -68,8 +81,74 @@ const UserManagement = () => {
         setIsAssignModalOpen(true);
     };
 
+    const handleCreateUser = async (e) => {
+        e.preventDefault();
+        setCreating(true);
+
+        try {
+            // 1. Create user with password
+            const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+                email: newUserData.email,
+                password: newUserData.password,
+                email_confirm: true,
+                user_metadata: {
+                    first_name: newUserData.first_name,
+                    last_name: newUserData.last_name,
+                    role: 'user'
+                }
+            });
+
+            if (authError) throw authError;
+
+            // 2. Update profile with full data
+            const { error: profileError } = await supabase
+                .from('profiles')
+                .update({
+                    first_name: newUserData.first_name,
+                    last_name: newUserData.last_name,
+                    name: `${newUserData.first_name} ${newUserData.last_name}`,
+                    phone: newUserData.phone,
+                    birth_date: newUserData.birth_date,
+                    must_change_password: true,
+                    role: 'user'
+                })
+                .eq('id', authData.user.id);
+
+            if (profileError) throw profileError;
+
+            // 3. Send credentials via email
+            await notify.sendCredentials({
+                userId: authData.user.id,
+                email: newUserData.email,
+                firstName: newUserData.first_name,
+                password: newUserData.password
+            });
+
+            alert(`Utente creato con successo!\n\nEmail: ${newUserData.email}\nPassword: ${newUserData.password}\n\n⚠️ L'utente dovrà cambiare la password al primo accesso.\n✅ Email inviata a ${newUserData.email}`);
+
+            setIsCreateModalOpen(false);
+            setNewUserData({
+                first_name: "",
+                last_name: "",
+                email: "",
+                phone: "",
+                birth_date: "",
+                password: ""
+            });
+
+            fetchUsers();
+
+        } catch (error) {
+            console.error("Error creating user:", error);
+            alert(`Errore: ${error.message}`);
+        } finally {
+            setCreating(false);
+        }
+    };
+
     const filteredUsers = users.filter(user =>
-        user.name?.toLowerCase().includes(searchTerm.toLowerCase())
+        user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
@@ -86,16 +165,28 @@ const UserManagement = () => {
                     </p>
                 </div>
 
-                {/* Search */}
-                <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--owner-text-muted)]" size={18} />
-                    <input
-                        type="text"
-                        placeholder="Cerca cliente..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10 pr-4 py-2 rounded-lg border border-[var(--owner-border)] bg-[var(--owner-bg-primary)] text-[var(--owner-text-primary)] focus:outline-none focus:border-[var(--owner-accent)] w-full md:w-64"
-                    />
+                {/* Actions */}
+                <div className="flex items-center gap-3">
+                    {/* Search */}
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[var(--owner-text-muted)]" size={18} />
+                        <input
+                            type="text"
+                            placeholder="Cerca cliente..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="pl-10 pr-4 py-2 rounded-lg border border-[var(--owner-border)] bg-[var(--owner-bg-primary)] text-[var(--owner-text-primary)] focus:outline-none focus:border-[var(--owner-accent)] w-full md:w-64"
+                        />
+                    </div>
+
+                    {/* Create User Button */}
+                    <button
+                        onClick={() => setIsCreateModalOpen(true)}
+                        className="flex items-center gap-2 bg-[var(--owner-accent)] text-white px-4 py-2 rounded-lg hover:bg-[var(--owner-accent-hover)] transition-colors font-bold whitespace-nowrap"
+                    >
+                        <UserPlus size={18} />
+                        Nuovo Utente
+                    </button>
                 </div>
             </div>
 
@@ -159,8 +250,8 @@ const UserManagement = () => {
                                             <button
                                                 onClick={() => toggleBlockStatus(user.id, user.is_blocked)}
                                                 className={`p-2 rounded-lg border border-transparent transition-all ${user.is_blocked
-                                                        ? 'hover:bg-green-500/10 text-green-500 hover:border-green-500'
-                                                        : 'hover:bg-red-500/10 text-red-500 hover:border-red-500'
+                                                    ? 'hover:bg-green-500/10 text-green-500 hover:border-green-500'
+                                                    : 'hover:bg-red-500/10 text-red-500 hover:border-red-500'
                                                     }`}
                                                 title={user.is_blocked ? "Sblocca Utente" : "Blocca Utente"}
                                             >
@@ -175,12 +266,117 @@ const UserManagement = () => {
                 )}
             </div>
 
+            {/* Create User Modal */}
+            {isCreateModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                    <div className="bg-[var(--owner-card-bg)] w-full max-w-lg rounded-2xl shadow-2xl border border-[var(--owner-border)] max-h-[90vh] overflow-y-auto">
+                        {/* Header */}
+                        <div className="flex justify-between items-center p-6 border-b border-[var(--owner-border)] sticky top-0 bg-[var(--owner-card-bg)] z-10">
+                            <div>
+                                <h2 className="text-xl font-bold text-[var(--owner-text-primary)]">Crea Nuovo Utente</h2>
+                                <p className="text-sm text-[var(--owner-text-muted)]">Inserisci i dati completi del cliente</p>
+                            </div>
+                            <button onClick={() => setIsCreateModalOpen(false)} className="text-[var(--owner-text-secondary)] hover:text-[var(--owner-text-primary)] text-2xl">
+                                ✕
+                            </button>
+                        </div>
+
+                        {/* Form */}
+                        <form onSubmit={handleCreateUser} className="p-6 space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-bold text-[var(--owner-text-secondary)] mb-2">Nome *</label>
+                                    <input
+                                        type="text"
+                                        required
+                                        value={newUserData.first_name}
+                                        onChange={(e) => setNewUserData({ ...newUserData, first_name: e.target.value })}
+                                        className="w-full bg-[var(--owner-bg-primary)] border border-[var(--owner-border)] rounded-lg p-3 text-[var(--owner-text-primary)] focus:border-[var(--owner-accent)] outline-none"
+                                        placeholder="Mario"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-[var(--owner-text-secondary)] mb-2">Cognome *</label>
+                                    <input
+                                        type="text"
+                                        required
+                                        value={newUserData.last_name}
+                                        onChange={(e) => setNewUserData({ ...newUserData, last_name: e.target.value })}
+                                        className="w-full bg-[var(--owner-bg-primary)] border border-[var(--owner-border)] rounded-lg p-3 text-[var(--owner-text-primary)] focus:border-[var(--owner-accent)] outline-none"
+                                        placeholder="Rossi"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-bold text-[var(--owner-text-secondary)] mb-2">Email *</label>
+                                <input
+                                    type="email"
+                                    required
+                                    value={newUserData.email}
+                                    onChange={(e) => setNewUserData({ ...newUserData, email: e.target.value })}
+                                    className="w-full bg-[var(--owner-bg-primary)] border border-[var(--owner-border)] rounded-lg p-3 text-[var(--owner-text-primary)] focus:border-[var(--owner-accent)] outline-none"
+                                    placeholder="mario.rossi@email.com"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-bold text-[var(--owner-text-secondary)] mb-2">Cellulare</label>
+                                <input
+                                    type="tel"
+                                    value={newUserData.phone}
+                                    onChange={(e) => setNewUserData({ ...newUserData, phone: e.target.value })}
+                                    className="w-full bg-[var(--owner-bg-primary)] border border-[var(--owner-border)] rounded-lg p-3 text-[var(--owner-text-primary)] focus:border-[var(--owner-accent)] outline-none"
+                                    placeholder="+39 320 1234567"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-bold text-[var(--owner-text-secondary)] mb-2">Data di Nascita</label>
+                                <input
+                                    type="date"
+                                    value={newUserData.birth_date}
+                                    onChange={(e) => setNewUserData({ ...newUserData, birth_date: e.target.value })}
+                                    className="w-full bg-[var(--owner-bg-primary)] border border-[var(--owner-border)] rounded-lg p-3 text-[var(--owner-text-primary)] focus:border-[var(--owner-accent)] outline-none"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-bold text-[var(--owner-text-secondary)] mb-2">Password Temporanea *</label>
+                                <input
+                                    type="text"
+                                    required
+                                    minLength={6}
+                                    value={newUserData.password}
+                                    onChange={(e) => setNewUserData({ ...newUserData, password: e.target.value })}
+                                    className="w-full bg-[var(--owner-bg-primary)] border border-[var(--owner-border)] rounded-lg p-3 text-[var(--owner-text-primary)] focus:border-[var(--owner-accent)] outline-none font-mono"
+                                    placeholder="minimo 6 caratteri"
+                                />
+                            </div>
+
+                            <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3">
+                                <p className="text-xs text-amber-400">
+                                    ⚠️ L'utente riceverà le credenziali via email e dovrà obbligatoriamente cambiare la password al primo accesso.
+                                </p>
+                            </div>
+
+                            <button
+                                type="submit"
+                                disabled={creating}
+                                className="w-full bg-[var(--owner-accent)] text-white font-bold py-3 rounded-lg hover:bg-[var(--owner-accent-hover)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {creating ? 'Creazione in corso...' : 'Crea Utente'}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            )}
+
             <AssignCardModal
                 isOpen={isAssignModalOpen}
                 onClose={() => setIsAssignModalOpen(false)}
                 user={selectedUser}
                 onSuccess={() => {
-                    // Maybe show a toast
                     alert(`Card assegnata con successo a ${selectedUser?.name}`);
                 }}
             />

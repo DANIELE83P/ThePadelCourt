@@ -42,6 +42,10 @@ export default function CreateCourtModal({ open, isOpen, close, onCourtCreated }
   const [courtData, setCourtData] = useState({
     name: "",
     location: "",
+    number: "",
+    is_indoor: false,
+    description: "",
+    features: [],
     startHour: "",
     endHour: "",
     pricePerHour: "",
@@ -53,7 +57,17 @@ export default function CreateCourtModal({ open, isOpen, close, onCourtCreated }
   const [error, setError] = useState(null);
 
   const handleChange = (e) => {
-    setCourtData({ ...courtData, [e.target.name]: e.target.value });
+    const { name, value, type, checked } = e.target;
+    if (type === 'checkbox' && name === 'features') {
+      const updatedFeatures = checked
+        ? [...courtData.features, value]
+        : courtData.features.filter(f => f !== value);
+      setCourtData({ ...courtData, features: updatedFeatures });
+    } else if (type === 'radio' && name === 'is_indoor') {
+      setCourtData({ ...courtData, is_indoor: value === 'true' });
+    } else {
+      setCourtData({ ...courtData, [name]: value });
+    }
   };
 
   const handleFileChange = (e) => {
@@ -112,6 +126,10 @@ export default function CreateCourtModal({ open, isOpen, close, onCourtCreated }
         .insert({
           name: courtData.name,
           location: courtData.location,
+          number: parseInt(courtData.number) || null,
+          is_indoor: courtData.is_indoor,
+          description: courtData.description,
+          features: courtData.features,
           operating_hours_start: startHour.toString(),
           operating_hours_end: endHour.toString(),
           price_per_hour: parseFloat(courtData.pricePerHour),
@@ -158,6 +176,10 @@ export default function CreateCourtModal({ open, isOpen, close, onCourtCreated }
       setCourtData({
         name: "",
         location: "",
+        number: "",
+        is_indoor: false,
+        description: "",
+        features: [],
         startHour: "",
         endHour: "",
         pricePerHour: "",
@@ -187,7 +209,7 @@ export default function CreateCourtModal({ open, isOpen, close, onCourtCreated }
     <>
       <Button
         onClick={open}
-        className="w-48 rounded-md bg-blue-600 py-2 px-4 text-sm font-medium text-white focus:outline-none hover:bg-black/30"
+        className="w-48 rounded-md bg-blue-600 py-2 px-4 text-sm font-medium text-white focus:outline-none hover:bg-blue-700 shadow-md transition-all"
       >
         {t('owner_create_stadium')}
       </Button>
@@ -195,116 +217,201 @@ export default function CreateCourtModal({ open, isOpen, close, onCourtCreated }
       <Dialog
         open={isOpen}
         as="div"
-        className="relative z-10 focus:outline-none"
+        className="relative z-50 focus:outline-none"
         onClose={close}
       >
-        <div className="fixed inset-0 z-10 w-screen overflow-y-auto bg-black/30">
+        <div className="fixed inset-0 z-10 w-screen overflow-y-auto bg-black/50 backdrop-blur-sm">
           <div className="flex min-h-full items-center justify-center p-4">
-            <DialogPanel className="w-full max-w-sm rounded-xl bg-white p-6 backdrop-blur-2xl duration-300 ease-out">
-              <h1 className="text-xl font-bold">{t('owner_add_court_title')}</h1>
-              <br />
+            <DialogPanel className="w-full max-w-2xl rounded-xl bg-[var(--owner-card-bg)] p-8 shadow-2xl border border-[var(--owner-border)] text-[var(--owner-text-primary)] max-h-[90vh] overflow-y-auto">
+              <h1 className="text-2xl font-bold mb-6">{t('owner_add_court_title')}</h1>
 
               {error && (
-                <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                <div className="mb-6 p-4 bg-red-500/10 border border-red-500/50 text-red-500 rounded-lg text-sm">
                   {error}
                 </div>
               )}
 
-              <DialogTitle className="space-y-4">
+              <DialogTitle className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Nome e Location - Prima Riga */}
+                  <label className="block">
+                    <span className="text-sm font-bold text-[var(--owner-text-secondary)] uppercase">{t('owner_name')} <span className="text-red-500">*</span></span>
+                    <input
+                      className="w-full rounded-lg bg-[var(--owner-bg-primary)] border border-[var(--owner-border)] p-3 mt-1 focus:border-[var(--owner-accent)] outline-none transition-colors"
+                      type="text"
+                      name="name"
+                      value={courtData.name}
+                      onChange={handleChange}
+                      placeholder={t('owner_enter_name')}
+                      required
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="text-sm font-bold text-[var(--owner-text-secondary)] uppercase">{t('owner_location')} <span className="text-red-500">*</span></span>
+                    <input
+                      className="w-full rounded-lg bg-[var(--owner-bg-primary)] border border-[var(--owner-border)] p-3 mt-1 focus:border-[var(--owner-accent)] outline-none transition-colors"
+                      type="text"
+                      name="location"
+                      value={courtData.location}
+                      onChange={handleChange}
+                      placeholder={t('owner_enter_location')}
+                      required
+                    />
+                  </label>
+
+                  {/* Numero e Tipo (Indoor/Outdoor) */}
+                  <label className="block">
+                    <span className="text-sm font-bold text-[var(--owner-text-secondary)] uppercase">Numero Campo</span>
+                    <input
+                      className="w-full rounded-lg bg-[var(--owner-bg-primary)] border border-[var(--owner-border)] p-3 mt-1 focus:border-[var(--owner-accent)] outline-none transition-colors"
+                      type="number"
+                      name="number"
+                      value={courtData.number}
+                      onChange={handleChange}
+                      placeholder="es. 1"
+                      min="1"
+                    />
+                  </label>
+
+                  <div className="block">
+                    <span className="text-sm font-bold text-[var(--owner-text-secondary)] uppercase block mb-1">Tipo Campo</span>
+                    <div className="flex bg-[var(--owner-bg-primary)] p-1 rounded-lg border border-[var(--owner-border)]">
+                      <label className={`flex-1 text-center py-2 rounded cursor-pointer transition-colors ${!courtData.is_indoor ? 'bg-[var(--owner-accent)] text-white font-bold' : 'text-[var(--owner-text-secondary)] hover:bg-[var(--owner-bg-secondary)]'}`}>
+                        <input
+                          type="radio"
+                          name="is_indoor"
+                          value="false"
+                          checked={!courtData.is_indoor}
+                          onChange={handleChange}
+                          className="hidden"
+                        />
+                        🌞 Scoperto
+                      </label>
+                      <label className={`flex-1 text-center py-2 rounded cursor-pointer transition-colors ${courtData.is_indoor ? 'bg-[var(--owner-accent)] text-white font-bold' : 'text-[var(--owner-text-secondary)] hover:bg-[var(--owner-bg-secondary)]'}`}>
+                        <input
+                          type="radio"
+                          name="is_indoor"
+                          value="true"
+                          checked={courtData.is_indoor}
+                          onChange={handleChange}
+                          className="hidden"
+                        />
+                        🏠 Coperto
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Orari e Prezzi */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <label className="block">
+                    <span className="text-sm font-bold text-[var(--owner-text-secondary)] uppercase">{t('owner_start_hour')}</span>
+                    <input
+                      className="w-full rounded-lg bg-[var(--owner-bg-primary)] border border-[var(--owner-border)] p-3 mt-1 focus:border-[var(--owner-accent)] outline-none transition-colors"
+                      type="time"
+                      name="startHour"
+                      value={courtData.startHour}
+                      onChange={handleChange}
+                      required
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="text-sm font-bold text-[var(--owner-text-secondary)] uppercase">{t('owner_end_hour')}</span>
+                    <input
+                      className="w-full rounded-lg bg-[var(--owner-bg-primary)] border border-[var(--owner-border)] p-3 mt-1 focus:border-[var(--owner-accent)] outline-none transition-colors"
+                      type="time"
+                      name="endHour"
+                      value={courtData.endHour}
+                      onChange={handleChange}
+                      required
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="text-sm font-bold text-[var(--owner-text-secondary)] uppercase">{t('owner_price')} <span className="text-red-500">*</span></span>
+                    <input
+                      className="w-full rounded-lg bg-[var(--owner-bg-primary)] border border-[var(--owner-border)] p-3 mt-1 focus:border-[var(--owner-accent)] outline-none transition-colors"
+                      type="number"
+                      name="pricePerHour"
+                      value={courtData.pricePerHour}
+                      onChange={handleChange}
+                      placeholder={t('owner_enter_price')}
+                      min="0"
+                      step="0.01"
+                      required
+                    />
+                  </label>
+                </div>
+
+                {/* Descrizione */}
                 <label className="block">
-                  <span className="text-gray-700">{t('owner_name')} *</span>
-                  <input
-                    className="w-full rounded-md h-11 p-3 border-2 shadow-md mt-1"
-                    type="text"
-                    name="name"
-                    value={courtData.name}
+                  <span className="text-sm font-bold text-[var(--owner-text-secondary)] uppercase">Descrizione (opzionale)</span>
+                  <textarea
+                    className="w-full rounded-lg bg-[var(--owner-bg-primary)] border border-[var(--owner-border)] p-3 mt-1 focus:border-[var(--owner-accent)] outline-none transition-colors"
+                    name="description"
+                    value={courtData.description}
                     onChange={handleChange}
-                    placeholder={t('owner_enter_name')}
-                    required
-                  />
-                </label>
-                <label className="block">
-                  <span className="text-gray-700">{t('owner_location')} *</span>
-                  <input
-                    className="w-full rounded-md h-11 p-3 border-2 shadow-md mt-1"
-                    type="text"
-                    name="location"
-                    value={courtData.location}
-                    onChange={handleChange}
-                    placeholder={t('owner_enter_location')}
-                    required
+                    rows="3"
+                    placeholder="Descrizione del campo..."
                   />
                 </label>
 
-                <label className="block">
-                  <span className="text-gray-700">{t('owner_start_hour')}</span>
-                  <input
-                    className="w-full rounded-md h-11 p-3 border-2 shadow-md mt-1"
-                    type="time"
-                    name="startHour"
-                    value={courtData.startHour}
-                    onChange={handleChange}
-                    required
-                  />
-                </label>
+                {/* Caratteristiche */}
+                <div>
+                  <span className="text-sm font-bold text-[var(--owner-text-secondary)] uppercase mb-2 block">Caratteristiche</span>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    {['illuminazione', 'spogliatoi', 'parcheggio', 'bar'].map((feat) => (
+                      <label key={feat} className="flex items-center space-x-2 bg-[var(--owner-bg-primary)] p-3 rounded-lg border border-[var(--owner-border)] cursor-pointer hover:border-[var(--owner-accent)] transition-colors">
+                        <input
+                          type="checkbox"
+                          name="features"
+                          value={feat}
+                          checked={courtData.features.includes(feat)}
+                          onChange={handleChange}
+                          className="rounded text-[var(--owner-accent)] focus:ring-[var(--owner-accent)]"
+                        />
+                        <span className="text-sm capitalize">
+                          {feat === 'illuminazione' && '💡 Luci'}
+                          {feat === 'spogliatoi' && '🚿 Docce'}
+                          {feat === 'parcheggio' && '🅿️ Park'}
+                          {feat === 'bar' && '☕ Bar'}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Durata e Giorni Anticipo */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <label className="block">
+                    <span className="text-sm font-bold text-[var(--owner-text-secondary)] uppercase">Durata Slot</span>
+                    <select
+                      className="w-full rounded-lg bg-[var(--owner-bg-primary)] border border-[var(--owner-border)] p-3 mt-1 focus:border-[var(--owner-accent)] outline-none transition-colors"
+                      name="durationMinutes"
+                      value={courtData.durationMinutes}
+                      onChange={handleChange}
+                    >
+                      <option value="60">60 Minuti (1 Ora)</option>
+                      <option value="90">90 Minuti (1.5 Ore)</option>
+                    </select>
+                  </label>
+                  <label className="block">
+                    <span className="text-sm font-bold text-[var(--owner-text-secondary)] uppercase">{t('owner_days_advance')}</span>
+                    <input
+                      className="w-full rounded-lg bg-[var(--owner-bg-primary)] border border-[var(--owner-border)] p-3 mt-1 focus:border-[var(--owner-accent)] outline-none transition-colors"
+                      type="number"
+                      name="daysInAdvance"
+                      value={courtData.daysInAdvance}
+                      onChange={handleChange}
+                      placeholder={t('owner_enter_days')}
+                      min="1"
+                    />
+                  </label>
+                </div>
 
                 <label className="block">
-                  <span className="text-gray-700">{t('owner_end_hour')}</span>
+                  <span className="text-sm font-bold text-[var(--owner-text-secondary)] uppercase">{t('owner_court_img')}</span>
                   <input
-                    className="w-full rounded-md h-11 p-3 border-2 shadow-md mt-1"
-                    type="time"
-                    name="endHour"
-                    value={courtData.endHour}
-                    onChange={handleChange}
-                    required
-                  />
-                </label>
-
-                <label className="block">
-                  <span className="text-gray-700">{t('owner_price')} *</span>
-                  <input
-                    className="w-full rounded-md h-11 p-3 border-2 shadow-md mt-1"
-                    type="number"
-                    name="pricePerHour"
-                    value={courtData.pricePerHour}
-                    onChange={handleChange}
-                    placeholder={t('owner_enter_price')}
-                    min="0"
-                    step="0.01"
-                    required
-                  />
-                </label>
-
-                <label className="block">
-                  <span className="text-gray-700">{t('owner_days_advance')}</span>
-                  <input
-                    className="w-full rounded-md h-11 p-3 border-2 shadow-md mt-1"
-                    type="number"
-                    name="daysInAdvance"
-                    value={courtData.daysInAdvance}
-                    onChange={handleChange}
-                    placeholder={t('owner_enter_days')}
-                    min="1"
-                  />
-                </label>
-
-                <label className="block">
-                  <span className="text-gray-700">Slot Duration (minutes)</span>
-                  <select
-                    className="w-full rounded-md h-11 p-3 border-2 shadow-md mt-1"
-                    name="durationMinutes"
-                    value={courtData.durationMinutes}
-                    onChange={handleChange}
-                  >
-                    <option value="60">60 Minutes (1 Hour)</option>
-                    <option value="90">90 Minutes (1.5 Hours)</option>
-                  </select>
-                </label>
-
-                <label className="block">
-                  <span className="text-gray-700">{t('owner_court_img')}</span>
-                  <input
-                    className="w-full rounded-md h-15 p-3 border-2 shadow-md mt-1"
+                    className="w-full rounded-lg bg-[var(--owner-bg-primary)] border border-[var(--owner-border)] p-3 mt-1 focus:border-[var(--owner-accent)] outline-none transition-colors"
                     type="file"
                     name="courtImg"
                     accept="image/*"
@@ -313,16 +420,16 @@ export default function CreateCourtModal({ open, isOpen, close, onCourtCreated }
                 </label>
               </DialogTitle>
 
-              <div className="mt-4 flex space-x-3">
+              <div className="mt-8 flex space-x-4 border-t border-[var(--owner-border)] pt-6">
                 <Button
-                  className="w-full rounded-md bg-blue-600 py-1.5 px-3 text-sm font-semibold text-white shadow-inner focus:outline-none hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 rounded-lg bg-[var(--owner-accent)] py-3 px-4 text-sm font-bold text-white shadow-lg hover:bg-[var(--owner-accent-hover)] transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                   onClick={handleSubmit}
                   disabled={loading}
                 >
                   {loading ? t('owner_creating') : t('owner_submit')}
                 </Button>
                 <Button
-                  className="w-full rounded-md bg-gray-500 py-1.5 px-3 text-sm font-semibold text-white shadow-inner focus:outline-none hover:bg-gray-600"
+                  className="flex-1 rounded-lg bg-[var(--owner-bg-secondary)] border border-[var(--owner-border)] py-3 px-4 text-sm font-bold text-[var(--owner-text-primary)] hover:bg-[var(--owner-bg-primary)] transition-all"
                   onClick={close}
                   disabled={loading}
                 >

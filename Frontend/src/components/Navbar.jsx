@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../Contexts/AuthContext";
+import NotificationCenter from "./NotificationCenter";
 
 const Navbar = () => {
   const { t } = useTranslation();
@@ -93,12 +94,15 @@ const Navbar = () => {
         {/* Left side (Login/Signup or Logout) for medium and large screens */}
         <div className="hidden md:flex items-center space-x-4">
           {isLoggedIn ? (
-            <button
-              className="bg-red-600 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-red-700 transition duration-300 transform hover:scale-105"
-              onClick={handleLogout}
-            >
-              {t('navbar_logout')}
-            </button>
+            <>
+              <NotificationCenter />
+              <button
+                className="bg-red-600 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-red-700 transition duration-300 transform hover:scale-105"
+                onClick={handleLogout}
+              >
+                {t('navbar_logout')}
+              </button>
+            </>
           ) : (
             <>
               <Link

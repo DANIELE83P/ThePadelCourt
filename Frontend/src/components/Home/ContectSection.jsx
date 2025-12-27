@@ -3,18 +3,28 @@ import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
 
+const DAYS_MAP = {
+  0: 'Domenica',
+  1: 'Lunedì',
+  2: 'Martedì',
+  3: 'Mercoledì',
+  4: 'Giovedì',
+  5: 'Venerdì',
+  6: 'Sabato'
+};
+
 export default function ContactSection() {
   const { t } = useTranslation();
   const [clubInfo, setClubInfo] = useState(null);
+  const [clubHours, setClubHours] = useState([]);
 
   useEffect(() => {
     fetchClubInfo();
+    fetchClubHours();
   }, []);
 
   const fetchClubInfo = async () => {
     try {
-      // In a single-club app, we just get the first created profile or specific ID
-      // For now, let's grab the first one we find
       const { data, error } = await supabase
         .from("club_profiles")
         .select("*")
@@ -29,13 +39,54 @@ export default function ContactSection() {
     }
   };
 
+  const fetchClubHours = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("club_hours")
+        .select("*")
+        .order('day_of_week');
+
+      if (data) {
+        setClubHours(data);
+      }
+    } catch (error) {
+      console.error("Error loading club hours:", error);
+    }
+  };
+
+  const getEmbedUrl = (url, address) => {
+    // 1. If it's a valid embed URL, return it as is
+    if (url && (url.includes('google.com/maps/embed') || url.includes('output=embed'))) {
+      return url;
+    }
+
+    // 2. If we have an address, generate a query-based embed URL (most reliable fallback)
+    if (address) {
+      const encodedAddress = encodeURIComponent(address);
+      return `https://maps.google.com/maps?q=${encodedAddress}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+    }
+
+    // 3. Fallback default
+    return "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3454.9898413491133!2d31.231328474388896!3d30.063204022447812!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14583f6cf35a39ff%3A0x8261cbb028164c71!2sNasr%20City!5e0!3m2!1sen!2seg!4v1647610892171!5m2!1sen!2seg";
+  };
+
   const info = {
     email: clubInfo?.email || "info@padelCourt.com",
     phone: clubInfo?.phone || "+20 123 456 7890",
     address: clubInfo?.address || "123 Padel Street, Nasr City, Cairo, Egypt",
-    hours_week: clubInfo?.hours_week || t('contact_hours_week'),
-    hours_weekend: clubInfo?.hours_weekend || t('contact_hours_weekend'),
-    map_url: clubInfo?.map_url || "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3454.9898413491133!2d31.231328474388896!3d30.063204022447812!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14583f6cf35a39ff%3A0x8261cbb028164c71!2sNasr%20City!5e0!3m2!1sen!2seg!4v1647610892171!5m2!1sen!2seg"
+    get map_url() {
+      return getEmbedUrl(clubInfo?.map_url, this.address);
+    }
+  };
+
+  const formatHours = (dayHours) => {
+    if (!dayHours.is_open) return 'Chiuso';
+
+    let hoursStr = `${dayHours.open_time} - ${dayHours.close_time}`;
+    if (dayHours.break_start && dayHours.break_end) {
+      hoursStr += ` (pausa: ${dayHours.break_start}-${dayHours.break_end})`;
+    }
+    return hoursStr;
   };
 
   return (
@@ -88,15 +139,30 @@ export default function ContactSection() {
 
               <div className="flex items-start space-x-4">
                 <Clock className="w-6 h-6 text-blue-500 mt-1" />
-                <div>
-                  <h3 className="font-semibold text-gray-900 mb-1">
+                <div className="w-full">
+                  <h3 className="font-semibold text-gray-900 mb-3">
                     {t('contact_hours_title')}
                   </h3>
-                  <p className="text-gray-600">
-                    {info.hours_week}
-                    <br />
-                    {info.hours_weekend}
-                  </p>
+                  {clubHours.length > 0 ? (
+                    <div className="space-y-2 text-sm">
+                      {clubHours.map(dayHours => (
+                        <div key={dayHours.day_of_week} className="flex justify-between">
+                          <span className="font-medium text-gray-700">
+                            {DAYS_MAP[dayHours.day_of_week]}:
+                          </span>
+                          <span className="text-gray-600">
+                            {formatHours(dayHours)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-600 text-sm">
+                      {t('contact_hours_week')}
+                      <br />
+                      {t('contact_hours_weekend')}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>

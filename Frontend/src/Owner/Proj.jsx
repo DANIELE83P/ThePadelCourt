@@ -100,8 +100,11 @@ const Proj = () => {
         .from('courts')
         .update({
           name: editedData.name,
-          location: editedData.location,
-          price_per_hour: parseFloat(editedData.pricePerHour)
+          number: parseInt(editedData.number),
+          is_indoor: editedData.is_indoor === 'true',
+          price_per_hour: parseFloat(editedData.pricePerHour),
+          description: editedData.description || null,
+          features: editedData.features || []
         })
         .eq('id', editedData.id);
 
@@ -136,7 +139,11 @@ const Proj = () => {
           price_per_hour: courtToDuplicate.price_per_hour,
           owner_id: user.id,
           court_img_url: courtToDuplicate.court_img_url,
-          court_img_public_id: courtToDuplicate.court_img_public_id
+          court_img_public_id: courtToDuplicate.court_img_public_id,
+          is_indoor: courtToDuplicate.is_indoor,
+          description: courtToDuplicate.description,
+          features: courtToDuplicate.features,
+          number: (parseInt(courtToDuplicate.number) || 0) + 1 // Auto-increment number for duplicate
         })
         .select()
         .single();
@@ -208,8 +215,20 @@ const Proj = () => {
   const handleEditSubmit = (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
-    const editedData = Object.fromEntries(formData.entries());
-    editedData.id = editingCourt.id;
+
+    // Collect all features checkboxes
+    const features = formData.getAll('features');
+
+    const editedData = {
+      id: editingCourt.id,
+      name: formData.get('name'),
+      number: formData.get('number'),
+      is_indoor: formData.get('is_indoor'),
+      pricePerHour: formData.get('pricePerHour'),
+      description: formData.get('description'),
+      features: features
+    };
+
     editCourt(editedData);
   };
 
@@ -268,51 +287,157 @@ const Proj = () => {
       >
         <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
         <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="w-full max-w-lg h-auto rounded-lg bg-white p-6 shadow-lg">
+          <Dialog.Panel className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-lg bg-white p-6 shadow-lg">
             <Dialog.Title className="text-2xl font-semibold text-gray-800 mb-4">
               {t('owner_edit_title')}
             </Dialog.Title>
             <form onSubmit={handleEditSubmit}>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  {t('owner_name')}
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  defaultValue={editingCourt?.name}
-                  className="mt-1 block pl-3 w-full rounded-md h-10 border-gray-300 shadow-md focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-                  required
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  {t('owner_location')}
-                </label>
-                <input
-                  type="text"
-                  name="location"
-                  defaultValue={editingCourt?.location}
-                  className="mt-1 block pl-3 w-full rounded-md h-10 border-gray-300 shadow-md focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-                  required
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  {t('owner_price')}
-                </label>
-                <input
-                  type="number"
-                  name="pricePerHour"
-                  defaultValue={editingCourt?.price_per_hour}
-                  className="mt-1 pl-3 block w-full rounded-md h-10 border-gray-300 shadow-md focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-                  step="0.01"
-                  min="0"
-                  required
-                />
+              <div className="space-y-4">
+                {/* Nome Campo */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    {t('owner_name')}
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    defaultValue={editingCourt?.name}
+                    className="mt-1 block pl-3 w-full rounded-md h-10 border-gray-300 shadow-md focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                    required
+                  />
+                </div>
+
+                {/* Tipo Campo: Indoor/Outdoor */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Tipo Campo
+                  </label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <label className="relative flex items-center p-4 border-2 rounded-lg cursor-pointer hover:border-blue-500 transition-all">
+                      <input
+                        type="radio"
+                        name="is_indoor"
+                        value="false"
+                        defaultChecked={!editingCourt?.is_indoor}
+                        className="mr-3"
+                      />
+                      <div>
+                        <div className="text-lg font-semibold">🌞 Scoperto</div>
+                        <div className="text-xs text-gray-500">Campo all'aperto</div>
+                      </div>
+                    </label>
+                    <label className="relative flex items-center p-4 border-2 rounded-lg cursor-pointer hover:border-blue-500 transition-all">
+                      <input
+                        type="radio"
+                        name="is_indoor"
+                        value="true"
+                        defaultChecked={editingCourt?.is_indoor}
+                        className="mr-3"
+                      />
+                      <div>
+                        <div className="text-lg font-semibold">🏠 Coperto</div>
+                        <div className="text-xs text-gray-500">Campo al chiuso</div>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                {/* Numero Campo */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Numero Campo
+                  </label>
+                  <input
+                    type="number"
+                    name="number"
+                    defaultValue={editingCourt?.number}
+                    className="mt-1 block pl-3 w-full rounded-md h-10 border-gray-300 shadow-md focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                    min="1"
+                    required
+                  />
+                </div>
+
+                {/* Prezzo */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    {t('owner_price')} (€/ora)
+                  </label>
+                  <input
+                    type="number"
+                    name="pricePerHour"
+                    defaultValue={editingCourt?.price_per_hour}
+                    className="mt-1 pl-3 block w-full rounded-md h-10 border-gray-300 shadow-md focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                    step="0.01"
+                    min="0"
+                    required
+                  />
+                </div>
+
+                {/* Descrizione */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Descrizione (opzionale)
+                  </label>
+                  <textarea
+                    name="description"
+                    defaultValue={editingCourt?.description}
+                    className="mt-1 block pl-3 w-full rounded-md border-gray-300 shadow-md focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                    rows="3"
+                    placeholder="Descrizione del campo..."
+                  />
+                </div>
+
+                {/* Caratteristiche */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Caratteristiche (opzionale)
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        name="features"
+                        value="illuminazione"
+                        defaultChecked={editingCourt?.features?.includes('illuminazione')}
+                        className="mr-2"
+                      />
+                      💡 Illuminazione
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        name="features"
+                        value="spogliatoi"
+                        defaultChecked={editingCourt?.features?.includes('spogliatoi')}
+                        className="mr-2"
+                      />
+                      🚿 Spogliatoi
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        name="features"
+                        value="parcheggio"
+                        defaultChecked={editingCourt?.features?.includes('parcheggio')}
+                        className="mr-2"
+                      />
+                      🅿️ Parcheggio
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        name="features"
+                        value="bar"
+                        defaultChecked={editingCourt?.features?.includes('bar')}
+                        className="mr-2"
+                      />
+                      ☕ Bar/Ristoro
+                    </label>
+                  </div>
+                </div>
               </div>
 
-              <div className="mt-6 flex justify-end space-x-2">
+              <div className="mt-6 flex justify-end space-x-2 pt-4 border-t">
                 <Button
                   type="submit"
                   className="inline-flex justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"

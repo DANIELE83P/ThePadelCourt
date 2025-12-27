@@ -19,8 +19,9 @@ import ProfilePage from "./pages/ProfilePage.jsx";
 import AccountSettings from "./components/UserProfile/AccountSettings.jsx";
 import ChangePassword from "./components/UserProfile/ChangePassword.jsx";
 import YourReservations from "./components/UserProfile/YourReservations.jsx";
-import UserCards from "./components/UserProfile/UserCards.jsx";
+import UserCards from "./pages/UserCards.jsx"; // Enhanced version with tabs
 import Bookk from "./components/Home/bookk.jsx";
+import ForcePasswordChange from "./pages/ForcePasswordChange.jsx";
 
 const router = createBrowserRouter([
   // Owner Dashboard - Standalone route (no navbar/footer)
@@ -58,6 +59,14 @@ const router = createBrowserRouter([
       {
         path: "court/:id",
         element: <Bookk />,
+      },
+      {
+        path: "force-password-change",
+        element: (
+          <ProtectedRoute>
+            <ForcePasswordChange />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "/profile",

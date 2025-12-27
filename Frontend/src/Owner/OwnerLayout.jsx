@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Contexts/AuthContext";
 import { useTheme } from "../Contexts/ThemeContext";
+import NotificationCenter from "../components/NotificationCenter";
 import {
     LayoutDashboard,
     Calendar,
@@ -17,7 +18,15 @@ import {
     Moon,
     Users,
     Award,
-    QrCode
+    QrCode,
+    Mail,
+    Bell,
+    TrendingUp,
+    Megaphone,
+    DollarSign,
+    Clock,
+    CalendarX,
+    Repeat
 } from "lucide-react";
 import "./OwnerDashboard.css";
 
@@ -26,13 +35,14 @@ const menuSections = [
         title: "Dashboard",
         items: [
             { id: "home", label: "Panoramica", icon: LayoutDashboard },
+            { id: "announcements", label: "News & Eventi", icon: Megaphone },
         ]
     },
     {
         title: "Prenotazioni",
         items: [
             { id: "calendar", label: "Calendario", icon: Calendar },
-            // { id: "bookings", label: "Lista Prenotazioni", icon: ListOrdered }, // Future
+            { id: "recurring", label: "Ricorrenti", icon: Repeat },
         ]
     },
     {
@@ -41,12 +51,16 @@ const menuSections = [
             { id: "users", label: "Lista Utenti", icon: Users },
             { id: "loyalty", label: "Programmi Fedeltà", icon: Award },
             { id: "scanner", label: "Scanner Ingressi", icon: QrCode },
+            { id: "email-templates", label: "Template Email", icon: Mail },
+            { id: "admin-users", label: "Gestione Admin", icon: Users },
+            { id: "analytics", label: "Analytics", icon: TrendingUp },
         ]
     },
     {
         title: "Gestione Campi",
         items: [
-            { id: "courts", label: "Prenota Campo", icon: Building2 },
+            { id: "courts", label: "Impostazioni Campi", icon: Building2 },
+            { id: "court-pricing", label: "Prezzi Dinamici", icon: DollarSign },
             { id: "promo", label: "Promo Cards", icon: Plus },
         ]
     },
@@ -54,6 +68,9 @@ const menuSections = [
         title: "Impostazioni",
         items: [
             { id: "settings", label: "Info Club", icon: Settings },
+            { id: "club-hours", label: "Orari Apertura", icon: Clock },
+            { id: "closures", label: "Chiusure", icon: CalendarX },
+            { id: "notifications", label: "Notifiche", icon: Bell },
         ]
     }
 ];
@@ -64,6 +81,26 @@ const OwnerLayout = ({ children, activeSection, setActiveSection }) => {
     const { theme, toggleTheme } = useTheme();
     const [collapsed, setCollapsed] = useState(false);
     const [mobileOpen, setMobileOpen] = useState(false);
+
+    // Run daily scheduler on mount
+    useEffect(() => {
+        const runScheduler = async () => {
+            const { shouldRunScheduler, runDailyScheduler } = await import('../services/schedulerService');
+
+            if (shouldRunScheduler()) {
+                console.log('[OwnerLayout] Running daily scheduler...');
+                const result = await runDailyScheduler(user.id);
+
+                if (result.success && result.stats) {
+                    console.log('[OwnerLayout] Scheduler stats:', result.stats);
+                }
+            }
+        };
+
+        if (user) {
+            runScheduler();
+        }
+    }, [user]);
 
     const handleLogout = async () => {
         await signOut();
@@ -163,6 +200,7 @@ const OwnerLayout = ({ children, activeSection, setActiveSection }) => {
                     </div>
 
                     <div className="owner-header-user">
+                        <NotificationCenter />
                         <button
                             onClick={toggleTheme}
                             className="p-2 rounded-lg hover:bg-white/10 border border-[var(--owner-border)] text-[var(--owner-text-secondary)] hover:text-[var(--owner-text-primary)] transition-colors"

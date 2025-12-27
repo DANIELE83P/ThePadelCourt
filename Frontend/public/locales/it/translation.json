@@ -182,5 +182,12 @@
     "owner_enter_price": "Inserisci prezzo all'ora",
     "owner_enter_days": "Inserisci numero di giorni",
     "owner_creating": "Creazione...",
-    "owner_submit": "Invia"
+    "owner_submit": "Invia",
+    "court_type_padel": "Campo da Padel",
+    "feature_lighting": "Illuminazione LED",
+    "feature_outdoor": "Outdoor",
+    "feature_indoor": "Indoor",
+    "feature_covered": "Coperto",
+    "feature_panoramic": "Vetri Panoramici",
+    "slot_no_longer_available": "Questo slot non è più disponibile. Per favore scegli un altro orario."
 }

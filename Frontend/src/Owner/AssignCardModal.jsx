@@ -100,9 +100,20 @@ const AssignCardModal = ({ isOpen, onClose, user, onSuccess }) => {
             // For now, let's keep it simple.
             */
 
-            // Send Notification (Email) - Placeholder
-            // notify.cardAssigned(user, cardType);
+            // Send Notifications (In-App + Email)
+            const cardName = activeTab === 'promo' ? selectedPromo.name : selectedLoyalty.name;
+            await notify.cardAssigned({
+                userId: user.id,
+                email: user.email,
+                firstName: user.first_name || user.name.split(' ')[0],
+                cardType: cardType,
+                cardName: cardName,
+                credits: activeTab === 'promo' ? selectedPromo.credits : null,
+                stampsRequired: activeTab === 'loyalty' ? selectedLoyalty.stamps_required : null,
+                reward: activeTab === 'loyalty' ? selectedLoyalty.reward_description : null
+            });
 
+            alert(`Carta "${cardName}" assegnata con successo!`);
             onSuccess();
             onClose();
         } catch (error) {
@@ -135,8 +146,8 @@ const AssignCardModal = ({ isOpen, onClose, user, onSuccess }) => {
                     <button
                         onClick={() => setActiveTab('promo')}
                         className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold transition-all ${activeTab === 'promo'
-                                ? 'bg-[var(--owner-bg-primary)] text-[var(--owner-accent)] shadow-sm border border-[var(--owner-border)]'
-                                : 'text-[var(--owner-text-muted)] hover:text-[var(--owner-text-secondary)]'
+                            ? 'bg-[var(--owner-bg-primary)] text-[var(--owner-accent)] shadow-sm border border-[var(--owner-border)]'
+                            : 'text-[var(--owner-text-muted)] hover:text-[var(--owner-text-secondary)]'
                             }`}
                     >
                         <CreditCard size={18} />
@@ -145,8 +156,8 @@ const AssignCardModal = ({ isOpen, onClose, user, onSuccess }) => {
                     <button
                         onClick={() => setActiveTab('loyalty')}
                         className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg text-sm font-semibold transition-all ${activeTab === 'loyalty'
-                                ? 'bg-[var(--owner-bg-primary)] text-[var(--owner-accent)] shadow-sm border border-[var(--owner-border)]'
-                                : 'text-[var(--owner-text-muted)] hover:text-[var(--owner-text-secondary)]'
+                            ? 'bg-[var(--owner-bg-primary)] text-[var(--owner-accent)] shadow-sm border border-[var(--owner-border)]'
+                            : 'text-[var(--owner-text-muted)] hover:text-[var(--owner-text-secondary)]'
                             }`}
                     >
                         <Award size={18} />
@@ -168,8 +179,8 @@ const AssignCardModal = ({ isOpen, onClose, user, onSuccess }) => {
                                         key={promo.id}
                                         onClick={() => setSelectedPromo(promo)}
                                         className={`p-4 rounded-xl border cursor-pointer transition-all flex justify-between items-center ${selectedPromo?.id === promo.id
-                                                ? 'border-[var(--owner-accent)] bg-[var(--owner-accent)]/10 ring-1 ring-[var(--owner-accent)]'
-                                                : 'border-[var(--owner-border)] hover:border-[var(--owner-text-muted)] bg-[var(--owner-bg-primary)]'
+                                            ? 'border-[var(--owner-accent)] bg-[var(--owner-accent)]/10 ring-1 ring-[var(--owner-accent)]'
+                                            : 'border-[var(--owner-border)] hover:border-[var(--owner-text-muted)] bg-[var(--owner-bg-primary)]'
                                             }`}
                                     >
                                         <div>
@@ -197,8 +208,8 @@ const AssignCardModal = ({ isOpen, onClose, user, onSuccess }) => {
                                         key={prog.id}
                                         onClick={() => setSelectedLoyalty(prog)}
                                         className={`p-4 rounded-xl border cursor-pointer transition-all flex justify-between items-center ${selectedLoyalty?.id === prog.id
-                                                ? 'border-[var(--owner-accent)] bg-[var(--owner-accent)]/10 ring-1 ring-[var(--owner-accent)]'
-                                                : 'border-[var(--owner-border)] hover:border-[var(--owner-text-muted)] bg-[var(--owner-bg-primary)]'
+                                            ? 'border-[var(--owner-accent)] bg-[var(--owner-accent)]/10 ring-1 ring-[var(--owner-accent)]'
+                                            : 'border-[var(--owner-border)] hover:border-[var(--owner-text-muted)] bg-[var(--owner-bg-primary)]'
                                             }`}
                                     >
                                         <div>

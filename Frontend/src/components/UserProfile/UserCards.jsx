@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { supabase } from "../lib/supabase";
-import { useAuth } from "../Contexts/AuthContext";
+import { supabase } from "../../lib/supabase";
+import { useAuth } from "../../Contexts/AuthContext";
 import { CreditCard, Award, QrCode, Download, Smartphone } from "lucide-react";
 import QRCode from "qrcode";
 import { jsPDF } from "jspdf";
+import { toast } from "react-hot-toast";
 
 const UserCards = () => {
     const { user } = useAuth();
@@ -101,6 +102,22 @@ const UserCards = () => {
         }
     };
 
+    const addToWallet = async (type, card) => {
+        const walletName = type === 'GOOGLE' ? 'Google Wallet' : 'Apple Wallet';
+
+        // Simulo un caricamento
+        const loadingToast = toast.loading(`Operazione in corso...`);
+
+        setTimeout(() => {
+            toast.dismiss(loadingToast);
+            // Qui in futuro ci sarà la chiamata al backend
+            toast.success(`Funzionalità ${walletName} in arrivo!`, {
+                icon: '🚀',
+                duration: 4000
+            });
+        }, 1500);
+    };
+
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
             <div>
@@ -151,17 +168,19 @@ const UserCards = () => {
                                     </div>
                                 </div>
 
-                                <div className="flex gap-3 mt-4">
+                                <div className="flex flex-wrap gap-2 mt-4">
                                     <button
                                         onClick={() => downloadPDF(card, 'PROMO')}
-                                        className="flex-1 bg-white/10 hover:bg-white/20 text-white py-2 rounded-lg flex items-center justify-center gap-2 text-sm font-medium transition-colors"
+                                        className="flex-1 min-w-[100px] bg-white/10 hover:bg-white/20 text-white py-2 px-3 rounded-lg flex items-center justify-center gap-2 text-xs font-medium transition-colors"
                                     >
-                                        <Download size={16} />
+                                        <Download size={14} />
                                         PDF
                                     </button>
-                                    <button className="flex-1 bg-black hover:bg-gray-900 text-white py-2 rounded-lg flex items-center justify-center gap-2 text-sm font-medium transition-colors border border-gray-700">
-                                        <Smartphone size={16} />
-                                        Wallet
+                                    <button
+                                        onClick={() => addToWallet('GOOGLE', card)}
+                                        className="flex-1 min-w-[120px] bg-black hover:bg-gray-900 text-white py-2 px-3 rounded-lg flex items-center justify-center gap-2 text-xs font-medium transition-colors border border-gray-700">
+                                        <Smartphone size={14} />
+                                        Google Wallet
                                     </button>
                                 </div>
                             </div>
@@ -197,17 +216,19 @@ const UserCards = () => {
                                     </p>
                                 </div>
 
-                                <div className="flex gap-3 mt-4">
+                                <div className="flex flex-wrap gap-2 mt-4">
                                     <button
                                         onClick={() => downloadPDF(card, 'LOYALTY')}
-                                        className="flex-1 bg-white/10 hover:bg-white/20 text-white py-2 rounded-lg flex items-center justify-center gap-2 text-sm font-medium transition-colors"
+                                        className="flex-1 min-w-[100px] bg-white/10 hover:bg-white/20 text-white py-2 px-3 rounded-lg flex items-center justify-center gap-2 text-xs font-medium transition-colors"
                                     >
-                                        <Download size={16} />
+                                        <Download size={14} />
                                         PDF
                                     </button>
-                                    <button className="flex-1 bg-black hover:bg-gray-900 text-white py-2 rounded-lg flex items-center justify-center gap-2 text-sm font-medium transition-colors border border-gray-700">
-                                        <Smartphone size={16} />
-                                        Wallet
+                                    <button
+                                        onClick={() => addToWallet('GOOGLE', card)}
+                                        className="flex-1 min-w-[120px] bg-black hover:bg-gray-900 text-white py-2 px-3 rounded-lg flex items-center justify-center gap-2 text-xs font-medium transition-colors border border-gray-700">
+                                        <Smartphone size={14} />
+                                        Google Wallet
                                     </button>
                                 </div>
                             </div>
