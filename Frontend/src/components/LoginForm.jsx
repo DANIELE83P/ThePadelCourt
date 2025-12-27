@@ -12,7 +12,7 @@ const LoginForm = () => {
   const { t } = useTranslation();
   const [errorMessage, setErrorMessage] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
-  const { signIn } = useAuth();
+  const { signIn, fetchProfile } = useAuth();
   const navigate = useNavigate();
 
   const validationSchema = Yup.object({
@@ -45,8 +45,15 @@ const LoginForm = () => {
       console.log("Login Successful", data);
       setSuccessMessage(t('succ_login'));
 
+      // Fetch profile to determine where to redirect
+      const { data: profile } = await fetchProfile(data.user.id);
+
       setTimeout(() => {
-        navigate("/", { replace: true });
+        if (profile?.role === 'owner' || profile?.role === 'admin') {
+          navigate("/ownerpage", { replace: true });
+        } else {
+          navigate("/", { replace: true });
+        }
       }, 1000);
     } catch (error) {
       console.error("Login error:", error);

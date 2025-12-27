@@ -1,17 +1,57 @@
 /* Owner Dashboard - Dark Premium Sidebar Theme */
 
 /* ===== CSS Variables ===== */
-:root {
+/* ===== CSS Variables ===== */
+.theme-dark {
   --owner-bg-primary: #0f1119;
   --owner-bg-secondary: #1a1d2e;
   --owner-bg-sidebar: linear-gradient(180deg, #1a1d2e 0%, #0f1119 100%);
   --owner-accent: #22c55e;
   --owner-accent-hover: #16a34a;
-  --owner-text-primary: #ffffff;
-  --owner-text-secondary: #94a3b8;
-  --owner-text-muted: #64748b;
+  --owner-text-primary: #f8fafc;
+  --owner-text-secondary: #cbd5e1;
+  --owner-text-muted: #94a3b8;
   --owner-border: #2d3142;
   --owner-card-bg: #1e2235;
+  --owner-sidebar-width: 260px;
+  --owner-sidebar-collapsed: 72px;
+  --owner-header-height: 64px;
+
+  /* Accessible Slot Colors for Dark Mode - High Contrast */
+  --owner-slot-avail-bg: rgba(34, 197, 94, 0.25);
+  --owner-slot-avail-border: #4ade80;
+  --owner-slot-avail-text: #86efac;
+  --owner-slot-booked-bg: rgba(59, 130, 246, 0.25);
+  --owner-slot-booked-border: #60a5fa;
+  --owner-slot-booked-text: #bfdbfe;
+}
+
+.theme-light {
+  --owner-bg-primary: #f8fafc;
+  --owner-bg-secondary: #ffffff;
+  --owner-bg-sidebar: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+  --owner-accent: #16a34a;
+  --owner-accent-hover: #15803d;
+  --owner-text-primary: #0f172a;
+  --owner-text-secondary: #475569;
+  --owner-text-muted: #64748b;
+  --owner-border: #e2e8f0;
+  --owner-card-bg: #ffffff;
+  --owner-sidebar-width: 260px;
+  --owner-sidebar-collapsed: 72px;
+  --owner-header-height: 64px;
+
+  /* Accessible Slot Colors for Light Mode */
+  --owner-slot-avail-bg: #f0fdf4;
+  --owner-slot-avail-border: #86efac;
+  --owner-slot-avail-text: #166534;
+  --owner-slot-booked-bg: #eff6ff;
+  --owner-slot-booked-border: #93c5fd;
+  --owner-slot-booked-text: #1e40af;
+}
+
+:root {
+  /* Default width variables */
   --owner-sidebar-width: 260px;
   --owner-sidebar-collapsed: 72px;
   --owner-header-height: 64px;
@@ -238,7 +278,7 @@
   border-radius: 6px;
   font-size: 13px;
   white-space: nowrap;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   z-index: 100;
   border: 1px solid var(--owner-border);
 }
@@ -252,7 +292,7 @@
   background: var(--owner-bg-primary);
 }
 
-.owner-sidebar.collapsed + .owner-main,
+.owner-sidebar.collapsed+.owner-main,
 .owner-main.collapsed {
   margin-left: var(--owner-sidebar-collapsed);
 }
@@ -486,24 +526,89 @@
   background: var(--owner-bg-secondary) !important;
 }
 
+/* ===== Enhanced Text Readability for Dark Theme ===== */
+.owner-content .text-blue-400,
+.owner-content .text-blue-500 {
+  color: #93c5fd !important;
+}
+
+.owner-content .text-green-400,
+.owner-content .text-green-500 {
+  color: #86efac !important;
+}
+
+.owner-content .opacity-60 {
+  opacity: 0.75 !important;
+}
+
+.owner-content .opacity-50 {
+  opacity: 0.65 !important;
+}
+
+/* Ensure all text elements have good contrast */
+.owner-content * {
+  color: var(--owner-text-secondary);
+}
+
+.owner-content .font-bold,
+.owner-content .font-semibold,
+.owner-content .font-medium {
+  color: var(--owner-text-primary);
+}
+
+/* Improve button text visibility */
+.owner-content button {
+  color: var(--owner-text-primary) !important;
+}
+
+.owner-content button:hover {
+  color: var(--owner-text-primary) !important;
+}
+
+/* ===== Dialog/Modal Dark Theme Support ===== */
+.owner-content [role="dialog"],
+.owner-content .bg-white[class*="Dialog"] {
+  background: var(--owner-card-bg) !important;
+  color: var(--owner-text-primary) !important;
+}
+
+.owner-content [role="dialog"] .text-gray-600,
+.owner-content [role="dialog"] .text-gray-700 {
+  color: var(--owner-text-secondary) !important;
+}
+
+.owner-content [role="dialog"] .bg-gray-50 {
+  background: var(--owner-bg-primary) !important;
+}
+
+.owner-content [role="dialog"] input,
+.owner-content [role="dialog"] select,
+.owner-content [role="dialog"] textarea {
+  background: var(--owner-bg-primary) !important;
+  color: var(--owner-text-primary) !important;
+  border-color: var(--owner-border) !important;
+}
+
+
+
 /* ===== Responsive Design ===== */
 @media (max-width: 1024px) {
   .owner-sidebar {
     transform: translateX(-100%);
   }
-  
+
   .owner-sidebar.mobile-open {
     transform: translateX(0);
   }
-  
+
   .owner-main {
     margin-left: 0;
   }
-  
+
   .owner-header {
     padding-left: 16px;
   }
-  
+
   .owner-mobile-toggle {
     display: flex;
   }
@@ -513,7 +618,7 @@
   .owner-content {
     padding: 16px;
   }
-  
+
   .owner-stats-grid {
     grid-template-columns: 1fr;
   }

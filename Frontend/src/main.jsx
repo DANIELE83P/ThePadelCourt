@@ -12,12 +12,14 @@ import RegisterPage from "./pages/RegisterPage.jsx";
 import Home from "./pages/HomePage.jsx";
 import CourtPage from "./components/CourtPage/CourtPage.jsx";
 import { AuthProvider } from "./Contexts/AuthContext.jsx";
+import { ThemeProvider } from "./Contexts/ThemeContext.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 import ProfilePage from "./pages/ProfilePage.jsx";
 import AccountSettings from "./components/UserProfile/AccountSettings.jsx";
 import ChangePassword from "./components/UserProfile/ChangePassword.jsx";
 import YourReservations from "./components/UserProfile/YourReservations.jsx";
+import UserCards from "./components/UserProfile/UserCards.jsx";
 import Bookk from "./components/Home/bookk.jsx";
 
 const router = createBrowserRouter([
@@ -77,6 +79,10 @@ const router = createBrowserRouter([
             path: "reservations",
             element: <YourReservations />,
           },
+          {
+            path: "cards",
+            element: <UserCards />,
+          },
         ],
       },
     ],
@@ -84,9 +90,11 @@ const router = createBrowserRouter([
 ]);
 
 createRoot(document.getElementById("root")).render(
-  <AuthProvider>
-    <Suspense fallback="loading">
-      <RouterProvider router={router} />
-    </Suspense>
-  </AuthProvider>
+  <ThemeProvider>
+    <AuthProvider>
+      <Suspense fallback="loading">
+        <RouterProvider router={router} />
+      </Suspense>
+    </AuthProvider>
+  </ThemeProvider>
 );

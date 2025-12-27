@@ -5,6 +5,9 @@ import Proj from "./Proj";
 import ClubSettings from "./ClubSettings";
 import BookingCalendar from "./BookingCalendar";
 import PromoSettings from "./PromoSettings";
+import UserManagement from "./UserManagement";
+import LoyaltySettings from "./LoyaltySettings";
+import UniversalScanner from "./UniversalScanner";
 
 const Owner = () => {
   const [activeSection, setActiveSection] = useState("home");
@@ -13,6 +16,12 @@ const Owner = () => {
     switch (activeSection) {
       case "home":
         return <OwnerHome onNavigate={setActiveSection} />;
+      case "users":
+        return <UserManagement />;
+      case "loyalty":
+        return <LoyaltySettings />;
+      case "scanner":
+        return <UniversalScanner />;
       case "calendar":
         return <BookingCalendar />;
       case "courts":

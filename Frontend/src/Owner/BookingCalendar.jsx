@@ -56,6 +56,19 @@ const BookingCalendar = () => {
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedSlot, setSelectedSlot] = useState(null);
+    const [timeFilter, setTimeFilter] = useState('all'); // 'all', 'morning', 'afternoon', 'evening'
+
+    // Convert AM/PM time to 24h format
+    const convertTo24h = (timeStr) => {
+        if (!timeStr) return timeStr;
+        const [time, period] = timeStr.split(' ');
+        let [hours, minutes] = time.split(':').map(Number);
+
+        if (period === 'PM' && hours !== 12) hours += 12;
+        if (period === 'AM' && hours === 12) hours = 0;
+
+        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+    };
 
     useEffect(() => {
         if (user) {
@@ -218,59 +231,96 @@ const BookingCalendar = () => {
     };
 
     // Render Day View
-    const renderDayView = () => (
-        <div className="min-w-[800px]">
-            <div className="grid grid-cols-[100px_1fr] border-b border-[var(--owner-border)]">
-                <div className="p-3 font-semibold">Orario</div>
-                <div className="grid" style={{ gridTemplateColumns: `repeat(${courts.length}, 1fr)` }}>
-                    {courts.map(court => (
-                        <div key={court.id} className="p-3 font-bold text-center border-l border-[var(--owner-border)]">
-                            {court.name}
-                        </div>
-                    ))}
-                </div>
-            </div>
-            <div className="grid grid-cols-[100px_1fr]">
-                <div className="border-r border-[var(--owner-border)] py-2 text-xs">
-                    <div className="text-center p-2">Mattina</div>
-                    <div className="text-center p-2">Pomeriggio</div>
-                    <div className="text-center p-2">Sera</div>
-                </div>
-                <div className="grid" style={{ gridTemplateColumns: `repeat(${courts.length}, 1fr)` }}>
-                    {courts.map(court => {
-                        const courtSlots = slots.filter(s => s.courtId === court.id);
-                        return (
-                            <div key={court.id} className="border-l border-[var(--owner-border)] min-h-[400px] p-2 space-y-2">
-                                {courtSlots.length === 0 && (
-                                    <div className="text-center text-sm py-4 italic opacity-50">Nessuno slot</div>
-                                )}
-                                {courtSlots.map(slot => (
-                                    <div
-                                        key={slot.id}
-                                        onClick={() => handleSlotClick(slot)}
-                                        className={`p-3 rounded-lg border cursor-pointer transition-all hover:shadow-md ${slot.type === 'booked'
-                                                ? 'bg-blue-900/30 border-blue-700 text-blue-300'
-                                                : 'bg-green-900/30 border-green-700 text-green-300 hover:bg-green-900/50'
-                                            }`}
-                                    >
-                                        <div className="font-bold text-sm">{slot.start} - {slot.end}</div>
-                                        {slot.type === 'booked' ? (
-                                            <div className="text-xs mt-1 flex items-center">
-                                                <User className="w-3 h-3 mr-1" />
-                                                {slot.data.booking_type === 'offline' ? 'Prenotazione Manuale' : 'Online'}
-                                            </div>
-                                        ) : (
-                                            <div className="text-xs mt-1 opacity-70">Disponibile</div>
-                                        )}
-                                    </div>
-                                ))}
+    const renderDayView = () => {
+        // Filter slots based on time filter
+        const filterSlotsByTime = (slotsList) => {
+            if (timeFilter === 'all') return slotsList;
+
+            return slotsList.filter(slot => {
+                const hour = slot.minutesStart / 60;
+                if (timeFilter === 'morning') return hour >= 6 && hour < 12;
+                if (timeFilter === 'afternoon') return hour >= 12 && hour < 18;
+                if (timeFilter === 'evening') return hour >= 18 && hour < 24;
+                return true;
+            });
+        };
+
+        return (
+            <div className="min-w-[800px]">
+                <div className="grid grid-cols-[100px_1fr] border-b border-[var(--owner-border)]">
+                    <div className="p-3 font-semibold">Orario</div>
+                    <div className="grid" style={{ gridTemplateColumns: `repeat(${courts.length}, 1fr)` }}>
+                        {courts.map(court => (
+                            <div key={court.id} className="p-3 font-bold text-center border-l border-[var(--owner-border)]">
+                                {court.name}
                             </div>
-                        );
-                    })}
+                        ))}
+                    </div>
+                </div>
+                <div className="grid grid-cols-[100px_1fr]">
+                    <div className="border-r border-[var(--owner-border)] py-2 text-xs space-y-1">
+                        <div
+                            className={`text-center p-2 cursor-pointer rounded transition-colors ${timeFilter === 'morning' ? 'bg-[var(--owner-accent)]/20 text-[var(--owner-accent)] font-bold' : 'hover:bg-white/5'}`}
+                            onClick={() => setTimeFilter(timeFilter === 'morning' ? 'all' : 'morning')}
+                        >
+                            Mattina
+                            <div className="text-[10px] opacity-60">6:00-12:00</div>
+                        </div>
+                        <div
+                            className={`text-center p-2 cursor-pointer rounded transition-colors ${timeFilter === 'afternoon' ? 'bg-[var(--owner-accent)]/20 text-[var(--owner-accent)] font-bold' : 'hover:bg-white/5'}`}
+                            onClick={() => setTimeFilter(timeFilter === 'afternoon' ? 'all' : 'afternoon')}
+                        >
+                            Pomeriggio
+                            <div className="text-[10px] opacity-60">12:00-18:00</div>
+                        </div>
+                        <div
+                            className={`text-center p-2 cursor-pointer rounded transition-colors ${timeFilter === 'evening' ? 'bg-[var(--owner-accent)]/20 text-[var(--owner-accent)] font-bold' : 'hover:bg-white/5'}`}
+                            onClick={() => setTimeFilter(timeFilter === 'evening' ? 'all' : 'evening')}
+                        >
+                            Sera
+                            <div className="text-[10px] opacity-60">18:00-24:00</div>
+                        </div>
+                    </div>
+                    <div className="grid" style={{ gridTemplateColumns: `repeat(${courts.length}, 1fr)` }}>
+                        {courts.map(court => {
+                            const courtSlots = filterSlotsByTime(slots.filter(s => s.courtId === court.id));
+                            return (
+                                <div key={court.id} className="border-l border-[var(--owner-border)] min-h-[400px] p-2 space-y-2">
+                                    {courtSlots.length === 0 && (
+                                        <div className="text-center text-sm py-4 italic opacity-50">Nessuno slot</div>
+                                    )}
+                                    {courtSlots.map(slot => (
+                                        <div
+                                            key={slot.id}
+                                            onClick={() => handleSlotClick(slot)}
+                                            className="p-3 rounded-lg border cursor-pointer transition-all hover:shadow-md"
+                                            style={{
+                                                backgroundColor: slot.type === 'booked' ? 'var(--owner-slot-booked-bg)' : 'var(--owner-slot-avail-bg)',
+                                                borderColor: slot.type === 'booked' ? 'var(--owner-slot-booked-border)' : 'var(--owner-slot-avail-border)',
+                                                color: slot.type === 'booked' ? 'var(--owner-slot-booked-text)' : 'var(--owner-slot-avail-text)'
+                                            }}
+                                        >
+                                            <div className="font-bold text-sm" style={{ color: 'inherit' }}>
+                                                {convertTo24h(slot.start)} - {convertTo24h(slot.end)}
+                                            </div>
+                                            {slot.type === 'booked' ? (
+                                                <div className="text-xs mt-1 flex items-center" style={{ color: 'inherit', opacity: 0.9 }}>
+                                                    <User className="w-3 h-3 mr-1" />
+                                                    {slot.data.booking_type === 'offline' ? 'Prenotazione Manuale' : 'Online'}
+                                                </div>
+                                            ) : (
+                                                <div className="text-xs mt-1" style={{ color: 'inherit', opacity: 0.8 }}>Disponibile</div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
-        </div>
-    );
+        );
+    };
 
     // Render Week View
     const renderWeekView = () => {
@@ -313,12 +363,18 @@ const BookingCalendar = () => {
                                 }}
                             >
                                 {bookedCount > 0 && (
-                                    <div className="text-xs bg-blue-900/50 text-blue-300 rounded px-2 py-1 mb-1">
+                                    <div
+                                        className="text-xs rounded px-2 py-1 mb-1"
+                                        style={{ backgroundColor: 'var(--owner-slot-booked-bg)', border: '1px solid var(--owner-slot-booked-border)', color: 'var(--owner-slot-booked-text)' }}
+                                    >
                                         {bookedCount} prenotazioni
                                     </div>
                                 )}
                                 {availCount > 0 && (
-                                    <div className="text-xs bg-green-900/50 text-green-300 rounded px-2 py-1">
+                                    <div
+                                        className="text-xs rounded px-2 py-1"
+                                        style={{ backgroundColor: 'var(--owner-slot-avail-bg)', border: '1px solid var(--owner-slot-avail-border)', color: 'var(--owner-slot-avail-text)' }}
+                                    >
                                         {availCount} disponibili
                                     </div>
                                 )}
@@ -368,7 +424,10 @@ const BookingCalendar = () => {
                                     {format(day, 'd')}
                                 </div>
                                 {bookedCount > 0 && (
-                                    <div className="mt-1 text-xs bg-blue-900/50 text-blue-300 rounded px-1 py-0.5 text-center">
+                                    <div
+                                        className="mt-1 text-xs rounded px-1 py-0.5 text-center"
+                                        style={{ backgroundColor: 'var(--owner-slot-booked-bg)', border: '1px solid var(--owner-slot-booked-border)', color: 'var(--owner-slot-booked-text)' }}
+                                    >
                                         {bookedCount}
                                     </div>
                                 )}
@@ -461,8 +520,8 @@ const BookingCalendar = () => {
                         <button
                             onClick={() => setViewMode(VIEW_MODES.DAY)}
                             className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${viewMode === VIEW_MODES.DAY
-                                    ? 'bg-green-600 text-white'
-                                    : 'hover:bg-white/10'
+                                ? 'bg-green-600 text-white'
+                                : 'hover:bg-white/10'
                                 }`}
                         >
                             Giorno
@@ -470,8 +529,8 @@ const BookingCalendar = () => {
                         <button
                             onClick={() => setViewMode(VIEW_MODES.WEEK)}
                             className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${viewMode === VIEW_MODES.WEEK
-                                    ? 'bg-green-600 text-white'
-                                    : 'hover:bg-white/10'
+                                ? 'bg-green-600 text-white'
+                                : 'hover:bg-white/10'
                                 }`}
                         >
                             Settimana
@@ -479,8 +538,8 @@ const BookingCalendar = () => {
                         <button
                             onClick={() => setViewMode(VIEW_MODES.MONTH)}
                             className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${viewMode === VIEW_MODES.MONTH
-                                    ? 'bg-green-600 text-white'
-                                    : 'hover:bg-white/10'
+                                ? 'bg-green-600 text-white'
+                                : 'hover:bg-white/10'
                                 }`}
                         >
                             Mese
@@ -488,8 +547,8 @@ const BookingCalendar = () => {
                         <button
                             onClick={() => setViewMode(VIEW_MODES.AGENDA)}
                             className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${viewMode === VIEW_MODES.AGENDA
-                                    ? 'bg-green-600 text-white'
-                                    : 'hover:bg-white/10'
+                                ? 'bg-green-600 text-white'
+                                : 'hover:bg-white/10'
                                 }`}
                         >
                             Agenda

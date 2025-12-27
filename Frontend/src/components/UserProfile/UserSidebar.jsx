@@ -4,6 +4,7 @@ import {
   UserCircleIcon,
   TicketIcon,
   EyeIcon,
+  CreditCardIcon,
 } from "@heroicons/react/24/outline";
 
 export default function UserSidebar() {
@@ -40,6 +41,16 @@ export default function UserSidebar() {
       >
         <TicketIcon className="w-8 h-8 mr-2" />
         <span>{t('sidebar_your_reservations')}</span>
+      </NavLink>
+      <NavLink
+        to="cards"
+        className={({ isActive }) =>
+          `flex items-center p-2 font-bold rounded-lg hover:bg-gray-100 ${isActive ? "bg-gray-200" : ""
+          }`
+        }
+      >
+        <CreditCardIcon className="w-8 h-8 mr-2" />
+        <span>Le Mie Card</span>
       </NavLink>
     </div>
   );

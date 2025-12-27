@@ -60,17 +60,17 @@ const PromoSettings = () => {
 
             setCards([data, ...cards]);
             setNewCard({ name: "", credits: "", price: "" });
-            toast.success("Promo card created!");
+            toast.success("Carta promozionale creata!");
         } catch (error) {
             console.error("Error creating card:", error);
-            toast.error("Failed to create card");
+            toast.error("Impossibile creare la carta");
         } finally {
             setCreating(false);
         }
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm("Are you sure you want to delete this card?")) return;
+        if (!window.confirm("Sei sicuro di voler eliminare questa carta?")) return;
         try {
             const { error } = await supabase
                 .from("promo_cards")
@@ -79,99 +79,115 @@ const PromoSettings = () => {
 
             if (error) throw error;
             setCards(cards.filter(c => c.id !== id));
-            toast.success("Card deleted");
+            toast.success("Carta eliminata");
         } catch (error) {
             console.error("Error deleting card:", error);
-            toast.error("Failed to delete");
+            toast.error("Impossibile eliminare");
         }
     };
 
     return (
-        <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-                <CreditCard className="text-green-600" />
-                Manage Promo Cards
-            </h2>
-
-            {/* Create Form */}
-            <form onSubmit={handleCreate} className="mb-8 p-4 bg-gray-50 rounded-lg border border-gray-100">
-                <h3 className="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wider">Create New Package</h3>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                    <div>
-                        <label className="block text-sm text-gray-600 mb-1">Card Name</label>
-                        <input
-                            type="text"
-                            placeholder="e.g. 10 Match Pack"
-                            className="w-full border rounded p-2"
-                            value={newCard.name}
-                            onChange={e => setNewCard({ ...newCard, name: e.target.value })}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm text-gray-600 mb-1">Credits (or Hours)</label>
-                        <input
-                            type="number"
-                            placeholder="10"
-                            className="w-full border rounded p-2"
-                            value={newCard.credits}
-                            onChange={e => setNewCard({ ...newCard, credits: e.target.value })}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm text-gray-600 mb-1">Price (€)</label>
-                        <input
-                            type="number"
-                            placeholder="90.00"
-                            step="0.01"
-                            className="w-full border rounded p-2"
-                            value={newCard.price}
-                            onChange={e => setNewCard({ ...newCard, price: e.target.value })}
-                            required
-                        />
-                    </div>
-                    <button
-                        type="submit"
-                        disabled={creating}
-                        className="bg-green-600 text-white p-2 rounded hover:bg-green-700 flex items-center justify-center gap-2 font-medium disabled:opacity-50"
-                    >
-                        <Plus size={18} />
-                        Create
-                    </button>
+        <div className="owner-section-card h-full flex flex-col">
+            <div className="owner-section-card-header flex justify-between items-center">
+                <div>
+                    <h2 className="text-xl font-bold flex items-center">
+                        <CreditCard className="w-6 h-6 mr-2 text-[var(--owner-accent)]" />
+                        Gestione Carte Promozionali
+                    </h2>
+                    <p className="text-sm text-[var(--owner-text-muted)]">
+                        Crea pacchetti di partite a scalare (es. 10 Ingressi).
+                    </p>
                 </div>
-            </form>
+            </div>
 
-            {/* Existing Cards */}
-            <h3 className="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wider">Active Packages</h3>
-            {loading ? (
-                <p>Loading...</p>
-            ) : cards.length === 0 ? (
-                <p className="text-gray-500 italic">No promo cards created yet.</p>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {cards.map(card => (
-                        <div key={card.id} className="border rounded-lg p-4 flex flex-col justify-between hover:shadow-md transition-shadow relative bg-gradient-to-br from-white to-gray-50">
-                            <div>
-                                <h4 className="font-bold text-lg text-gray-800">{card.name}</h4>
-                                <div className="mt-2 space-y-1">
-                                    <p className="text-gray-600">Credits: <span className="font-semibold text-black">{card.credits}</span></p>
-                                    <p className="text-gray-600">Price: <span className="font-semibold text-green-600">€{card.price}</span></p>
+            <div className="flex-1 overflow-auto p-6">
+                {/* Create Form */}
+                <form onSubmit={handleCreate} className="mb-8 p-6 bg-[var(--owner-bg-secondary)] rounded-xl border border-[var(--owner-border)]">
+                    <h3 className="text-sm font-bold text-[var(--owner-text-secondary)] mb-4 uppercase tracking-wider">Crea Nuovo Pacchetto</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+                        <div>
+                            <label className="block text-xs font-bold text-[var(--owner-text-secondary)] mb-2 uppercase">Nome Pacchetto</label>
+                            <input
+                                type="text"
+                                placeholder="es. Pacchetto 10 Ingressi"
+                                className="w-full bg-[var(--owner-bg-primary)] border border-[var(--owner-border)] rounded-lg p-3 text-[var(--owner-text-primary)] focus:border-[var(--owner-accent)] outline-none"
+                                value={newCard.name}
+                                onChange={e => setNewCard({ ...newCard, name: e.target.value })}
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold text-[var(--owner-text-secondary)] mb-2 uppercase">Partite Incluse</label>
+                            <input
+                                type="number"
+                                placeholder="10"
+                                className="w-full bg-[var(--owner-bg-primary)] border border-[var(--owner-border)] rounded-lg p-3 text-[var(--owner-text-primary)] focus:border-[var(--owner-accent)] outline-none"
+                                value={newCard.credits}
+                                onChange={e => setNewCard({ ...newCard, credits: e.target.value })}
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold text-[var(--owner-text-secondary)] mb-2 uppercase">Prezzo (€)</label>
+                            <input
+                                type="number"
+                                placeholder="90.00"
+                                step="0.01"
+                                className="w-full bg-[var(--owner-bg-primary)] border border-[var(--owner-border)] rounded-lg p-3 text-[var(--owner-text-primary)] focus:border-[var(--owner-accent)] outline-none"
+                                value={newCard.price}
+                                onChange={e => setNewCard({ ...newCard, price: e.target.value })}
+                                required
+                            />
+                        </div>
+                        <button
+                            type="submit"
+                            disabled={creating}
+                            className="bg-[var(--owner-accent)] text-white p-3 rounded-lg hover:bg-[var(--owner-accent-hover)] flex items-center justify-center gap-2 font-bold disabled:opacity-50 transition-colors h-[50px]"
+                        >
+                            <Plus size={18} />
+                            Crea
+                        </button>
+                    </div>
+                </form>
+
+                {/* Existing Cards */}
+                <h3 className="text-sm font-bold text-[var(--owner-text-secondary)] mb-4 uppercase tracking-wider">Pacchetti Attivi</h3>
+                {loading ? (
+                    <p className="text-[var(--owner-text-muted)]">Caricamento...</p>
+                ) : cards.length === 0 ? (
+                    <div className="text-center py-12 text-[var(--owner-text-muted)] border border-dashed border-[var(--owner-border)] rounded-xl">
+                        <CreditCard size={48} className="mx-auto mb-4 opacity-50" />
+                        <p>Nessun pacchetto promozionale creato.</p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {cards.map(card => (
+                            <div key={card.id} className="bg-[var(--owner-card-bg)] border border-[var(--owner-border)] rounded-xl p-6 flex flex-col justify-between hover:border-[var(--owner-accent)] transition-colors relative group">
+                                <div>
+                                    <h4 className="font-bold text-lg text-[var(--owner-text-primary)] mb-2">{card.name}</h4>
+                                    <div className="space-y-2">
+                                        <p className="text-[var(--owner-text-secondary)] text-sm flex justify-between">
+                                            Partite: <span className="font-bold text-[var(--owner-text-primary)]">{card.credits}</span>
+                                        </p>
+                                        <p className="text-[var(--owner-text-secondary)] text-sm flex justify-between">
+                                            Prezzo: <span className="font-bold text-[var(--owner-accent)]">€{card.price}</span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="mt-6 pt-4 border-t border-[var(--owner-border)] flex justify-end">
+                                    <button
+                                        onClick={() => handleDelete(card.id)}
+                                        className="text-red-500 hover:text-red-400 p-2 rounded hover:bg-red-500/10 transition-colors"
+                                        title="Elimina Pacchetto"
+                                    >
+                                        <Trash2 size={18} />
+                                    </button>
                                 </div>
                             </div>
-                            <div className="mt-4 pt-3 border-t flex justify-end">
-                                <button
-                                    onClick={() => handleDelete(card.id)}
-                                    className="text-red-500 hover:text-red-700 p-1 hover:bg-red-50 rounded"
-                                    title="Delete Package"
-                                >
-                                    <Trash2 size={18} />
-                                </button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
+                        ))}
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

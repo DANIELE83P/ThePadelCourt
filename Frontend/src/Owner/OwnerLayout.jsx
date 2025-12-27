@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Contexts/AuthContext";
+import { useTheme } from "../Contexts/ThemeContext";
 import {
     LayoutDashboard,
     Calendar,
@@ -11,7 +12,12 @@ import {
     ChevronLeft,
     Menu,
     X,
-    ListOrdered
+    ListOrdered,
+    Sun,
+    Moon,
+    Users,
+    Award,
+    QrCode
 } from "lucide-react";
 import "./OwnerDashboard.css";
 
@@ -27,6 +33,14 @@ const menuSections = [
         items: [
             { id: "calendar", label: "Calendario", icon: Calendar },
             // { id: "bookings", label: "Lista Prenotazioni", icon: ListOrdered }, // Future
+        ]
+    },
+    {
+        title: "Utenti",
+        items: [
+            { id: "users", label: "Lista Utenti", icon: Users },
+            { id: "loyalty", label: "Programmi Fedeltà", icon: Award },
+            { id: "scanner", label: "Scanner Ingressi", icon: QrCode },
         ]
     },
     {
@@ -47,6 +61,7 @@ const menuSections = [
 const OwnerLayout = ({ children, activeSection, setActiveSection }) => {
     const navigate = useNavigate();
     const { user, signOut } = useAuth();
+    const { theme, toggleTheme } = useTheme();
     const [collapsed, setCollapsed] = useState(false);
     const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -71,7 +86,7 @@ const OwnerLayout = ({ children, activeSection, setActiveSection }) => {
     const userInitial = user?.email?.charAt(0).toUpperCase() || "U";
 
     return (
-        <div className="owner-layout">
+        <div className={`owner-layout theme-${theme}`}>
             {/* Mobile Overlay */}
             <div
                 className={`owner-overlay ${mobileOpen ? 'visible' : ''}`}
@@ -148,6 +163,13 @@ const OwnerLayout = ({ children, activeSection, setActiveSection }) => {
                     </div>
 
                     <div className="owner-header-user">
+                        <button
+                            onClick={toggleTheme}
+                            className="p-2 rounded-lg hover:bg-white/10 border border-[var(--owner-border)] text-[var(--owner-text-secondary)] hover:text-[var(--owner-text-primary)] transition-colors"
+                            aria-label="Toggle Theme"
+                        >
+                            {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+                        </button>
                         <div className="owner-header-avatar">{userInitial}</div>
                         <button className="owner-header-logout" onClick={handleLogout}>
                             <LogOut size={16} className="inline mr-2" />

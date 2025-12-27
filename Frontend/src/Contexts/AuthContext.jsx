@@ -51,8 +51,10 @@ export const AuthProvider = ({ children }) => {
 
       if (error) throw error;
       setProfile(data);
+      return { data, error: null };
     } catch (error) {
       console.error('Error fetching profile:', error);
+      return { data: null, error };
     } finally {
       setIsLoading(false);
     }
@@ -156,6 +158,7 @@ export const AuthProvider = ({ children }) => {
     signOut,
     updateProfile,
     changePassword,
+    fetchProfile,
     setIsLoggedIn: () => { }, // For backward compatibility
   };
 

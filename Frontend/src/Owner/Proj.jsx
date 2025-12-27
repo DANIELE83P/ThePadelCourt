@@ -382,14 +382,14 @@ const Proj = () => {
         <div className="fixed inset-0 flex items-center justify-center p-4">
           <DialogPanel className="w-full h-auto max-w-md rounded-lg bg-white p-6">
             <DialogTitle className="text-lg font-medium leading-6 text-gray-900 mb-4">
-              Duplicate Court
+              Duplica Campo
             </DialogTitle>
             <div className="mt-2">
               <p className="text-sm text-gray-500 mb-4">
-                Enter a name for the duplicate court. All other settings will be copied.
+                Inserisci un nome per il campo duplicato. Tutte le altre impostazioni verranno copiate.
               </p>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                New Court Name
+                Nome Nuovo Campo
               </label>
               <input
                 type="text"
