@@ -1,10 +1,12 @@
 /* eslint-disable react/prop-types */
 import { createContext, useState, useEffect, useContext } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "../lib/supabase";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+  const { t } = useTranslation();
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -137,7 +139,7 @@ export const AuthProvider = ({ children }) => {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="animate-pulse text-center">
-          <p className="text-lg font-semibold">Loading...</p>
+          <p className="text-lg font-semibold">{t('generic_loading')}</p>
         </div>
       </div>
     );

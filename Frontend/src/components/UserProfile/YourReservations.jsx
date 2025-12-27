@@ -1,10 +1,12 @@
 /* eslint-disable react/no-unescaped-entities */
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import toast, { Toaster } from "react-hot-toast";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../Contexts/AuthContext";
 
 export default function YourReservations() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -35,7 +37,7 @@ export default function YourReservations() {
       setReservations(data || []);
     } catch (error) {
       console.error("Error fetching reservations:", error);
-      toast.error("Failed to load reservations");
+      toast.error(t('res_failed_load'));
     } finally {
       setLoading(false);
     }
@@ -50,11 +52,11 @@ export default function YourReservations() {
 
       if (error) throw error;
 
-      toast.success("Booking Confirmed");
+      toast.success(t('res_confirmed_succ'));
       fetchReservations(); // Refresh list
     } catch (error) {
       console.error("Error confirming booking:", error);
-      toast.error("Failed to confirm booking");
+      toast.error(t('res_confirm_failed'));
     }
   };
 
@@ -86,25 +88,25 @@ export default function YourReservations() {
         .eq('time_slot_start', booking.time_slot_start)
         .eq('time_slot_end', booking.time_slot_end);
 
-      toast.error("Booking canceled");
+      toast.error(t('res_canceled'));
       fetchReservations(); // Refresh list
     } catch (error) {
       console.error("Error canceling booking:", error);
-      toast.error("Failed to cancel booking");
+      toast.error(t('res_cancel_failed'));
     }
   };
 
   if (loading) {
-    return <div className="text-center p-4">Loading...</div>;
+    return <div className="text-center p-4">{t('res_loading')}</div>;
   }
 
   return (
     <div className="max-w-4xl overflow-auto flex flex-col h-screen mx-20 p-4">
       <br /><br />
-      <h1 className="text-3xl font-bold mb-6 text-center">Your Reservations</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center">{t('res_title')}</h1>
       {reservations.length === 0 ? (
         <p className="text-center text-lg text-gray-500">
-          You don't have any reservations yet.
+          {t('res_no_reservations')}
         </p>
       ) : (
         <ul className="space-y-6">
@@ -119,30 +121,30 @@ export default function YourReservations() {
                 </h3>
                 <span
                   className={`px-3 py-1 font-semibold rounded-full text-white ${reservation.status === "confirmed"
-                      ? "bg-green-500"
-                      : reservation.status === "cancelled"
-                        ? "bg-red-500"
-                        : "bg-yellow-500"
+                    ? "bg-green-500"
+                    : reservation.status === "cancelled"
+                      ? "bg-red-500"
+                      : "bg-yellow-500"
                     }`}
                 >
-                  {reservation.status}
+                  {reservation.status === 'confirmed' ? t('status_confirmed') : reservation.status === 'cancelled' ? t('status_cancelled') : reservation.status === 'Pending' ? t('status_pending') : reservation.status}
                 </span>
               </div>
               <div className="text-gray-600">
                 <p className="font-bold mb-2">
-                  Date: {new Date(reservation.booking_date).toLocaleDateString("en-GB")}
+                  {t('res_date')} {new Date(reservation.booking_date).toLocaleDateString("it-IT")}
                 </p>
                 <p className="mb-2">
-                  <span className="font-semibold">Check-in:</span>{" "}
+                  <span className="font-semibold">{t('res_checkin')}</span>{" "}
                   {reservation.time_slot_start}
                 </p>
                 <p className="mb-4">
-                  <span className="font-semibold">Check-out:</span>{" "}
+                  <span className="font-semibold">{t('res_checkout')}</span>{" "}
                   {reservation.time_slot_end}
                 </p>
                 {reservation.courts?.location && (
                   <p className="mb-2 text-sm text-gray-500">
-                    <span className="font-semibold">Location:</span>{" "}
+                    <span className="font-semibold">{t('res_location')}</span>{" "}
                     {reservation.courts.location}
                   </p>
                 )}
@@ -154,14 +156,14 @@ export default function YourReservations() {
                       onClick={() => handleConfirm(reservation.id)}
                       className="px-4 py-2 font-semibold bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-200"
                     >
-                      Confirm
+                      {t('res_confirm_btn')}
                     </button>
                   )}
                   <button
                     onClick={() => handleCancel(reservation.id)}
                     className="px-4 py-2 font-semibold bg-red-600 text-white rounded-md hover:bg-red-700 transition duration-200"
                   >
-                    Cancel
+                    {t('res_cancel_btn')}
                   </button>
                 </div>
               )}

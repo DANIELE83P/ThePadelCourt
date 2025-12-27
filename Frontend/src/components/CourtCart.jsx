@@ -1,8 +1,10 @@
 /* eslint-disable react/prop-types */
+import { useTranslation } from "react-i18next";
 import { FaCalendarAlt, FaMapMarkerAlt, FaClock } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 export default function CourtCart({ court }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   if (!court) return null;
@@ -32,7 +34,7 @@ export default function CourtCart({ court }) {
         <div className="flex items-center mb-3">
           <FaClock className="text-lime-500 mr-2" />
           <p className="text-gray-700 text-sm">
-            Open: {operatingStart}:00 To {operatingEnd}:00
+            {t('court_open', { start: operatingStart, end: operatingEnd })}
           </p>
         </div>
         {court.price_per_hour && (
@@ -45,7 +47,7 @@ export default function CourtCart({ court }) {
           onClick={() => navigate(`/court/${courtId}`)}
         >
           <FaCalendarAlt className="mr-2" />
-          Book Now
+          {t('book_now')}
         </button>
       </div>
     </div>

@@ -1,8 +1,8 @@
 /* eslint-disable react-refresh/only-export-components */
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import toast, { Toaster } from "react-hot-toast";
 import { Button, Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
-import Page from "./ownerPage";
 import withGuard from "../utils/withGuard";
 import CreateCourtModal from "./modul";
 import Appp from "./app";
@@ -10,6 +10,7 @@ import { supabase } from "../lib/supabase";
 import { useAuth } from "../Contexts/AuthContext";
 
 const Proj = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [starge, setStorge] = useState([]);
   const [courtToRemove, setCourtToRemove] = useState(null);
@@ -66,7 +67,7 @@ const Proj = () => {
       setStorge(data || []);
     } catch (error) {
       console.error("Error fetching courts:", error);
-      toast.error("Failed to fetch courts");
+      toast.error(t('owner_fetch_failed'));
     } finally {
       setLoading(false);
     }
@@ -86,10 +87,10 @@ const Proj = () => {
       if (error) throw error;
 
       await fetchCourts();
-      toast.success("Court deleted successfully");
+      toast.success(t('owner_delete_succ'));
     } catch (error) {
       console.error("Error deleting court:", error);
-      toast.error("Failed to delete court");
+      toast.error(t('owner_delete_failed'));
     }
   };
 
@@ -107,17 +108,17 @@ const Proj = () => {
       if (error) throw error;
 
       await fetchCourts();
-      toast.success("Court updated successfully");
+      toast.success(t('owner_update_succ'));
       closeEdit();
     } catch (error) {
       console.error("Error updating court:", error);
-      toast.error("Failed to update court");
+      toast.error(t('owner_update_failed'));
     }
   };
 
   const duplicateCourt = async () => {
     if (!duplicateName.trim()) {
-      toast.error("Please enter a name for the duplicate court");
+      toast.error(t('owner_dup_enter_name'));
       return;
     }
 
@@ -194,11 +195,11 @@ const Proj = () => {
       }
 
       await fetchCourts();
-      toast.success(`Court "${duplicateName}" created successfully!`);
+      toast.success(t('owner_dup_succ', { name: duplicateName }));
       closeDuplicate();
     } catch (error) {
       console.error("Error duplicating court:", error);
-      toast.error("Failed to duplicate court");
+      toast.error(t('owner_dup_failed'));
     } finally {
       setLoading(false);
     }
@@ -218,9 +219,7 @@ const Proj = () => {
 
   return (
     <>
-      <Page />
-      <br />
-      <div className="text-center">
+      <div className="text-center mb-6">
         <CreateCourtModal
           open={open}
           isOpen={isOpen}
@@ -232,11 +231,11 @@ const Proj = () => {
 
       {loading ? (
         <div className="text-center py-10">
-          <p className="text-lg">Loading courts...</p>
+          <p className="text-lg">{t('courts_loading')}</p>
         </div>
       ) : starge.length === 0 ? (
         <div className="text-center py-10">
-          <p className="text-lg text-gray-600">No courts yet. Create your first court!</p>
+          <p className="text-lg text-gray-600">{t('owner_no_courts')}</p>
         </div>
       ) : (
         <div className="w-auto ml-20 max-md:flex max-md:justify-center max-md:flex-col max-md:items-center max-md:my-2 max-md:mx-auto container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
@@ -271,12 +270,12 @@ const Proj = () => {
         <div className="fixed inset-0 flex items-center justify-center p-4">
           <Dialog.Panel className="w-full max-w-lg h-auto rounded-lg bg-white p-6 shadow-lg">
             <Dialog.Title className="text-2xl font-semibold text-gray-800 mb-4">
-              Edit Court
+              {t('owner_edit_title')}
             </Dialog.Title>
             <form onSubmit={handleEditSubmit}>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">
-                  Name
+                  {t('owner_name')}
                 </label>
                 <input
                   type="text"
@@ -288,7 +287,7 @@ const Proj = () => {
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">
-                  Location
+                  {t('owner_location')}
                 </label>
                 <input
                   type="text"
@@ -300,7 +299,7 @@ const Proj = () => {
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">
-                  Price Per Hour (€)
+                  {t('owner_price')}
                 </label>
                 <input
                   type="number"
@@ -318,14 +317,14 @@ const Proj = () => {
                   type="submit"
                   className="inline-flex justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                 >
-                  Save Changes
+                  {t('owner_save')}
                 </Button>
                 <Button
                   type="button"
                   className="inline-flex justify-center rounded-md border border-transparent bg-gray-200 px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-2"
                   onClick={closeEdit}
                 >
-                  Cancel
+                  {t('owner_cancel')}
                 </Button>
               </div>
             </form>
@@ -343,12 +342,11 @@ const Proj = () => {
         <div className="fixed inset-0 flex items-center justify-center p-4">
           <DialogPanel className="w-full h-auto max-w-sm rounded bg-white p-6">
             <DialogTitle className="text-lg font-medium leading-6 text-gray-900">
-              Confirm Deletion
+              {t('owner_confirm_del_title')}
             </DialogTitle>
             <div className="mt-2">
               <p className="text-sm text-gray-500">
-                Are you sure you want to remove this court? This action cannot
-                be undone.
+                {t('owner_confirm_del_text')}
               </p>
             </div>
             <div className="mt-4 flex justify-end space-x-2">
@@ -360,14 +358,14 @@ const Proj = () => {
                   closeRemove();
                 }}
               >
-                Yes, Remove
+                {t('owner_yes_remove')}
               </Button>
               <Button
                 type="button"
                 className="inline-flex justify-center rounded-md border border-transparent bg-gray-200 px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-2"
                 onClick={closeRemove}
               >
-                Cancel
+                {t('owner_cancel')}
               </Button>
             </div>
           </DialogPanel>
@@ -398,7 +396,7 @@ const Proj = () => {
                 value={duplicateName}
                 onChange={(e) => setDuplicateName(e.target.value)}
                 className="w-full rounded-md h-11 p-3 border-2 border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50"
-                placeholder="Enter court name"
+                placeholder={t('owner_enter_name')}
               />
             </div>
             <div className="mt-6 flex justify-end space-x-2">
@@ -408,7 +406,7 @@ const Proj = () => {
                 onClick={duplicateCourt}
                 disabled={loading || !duplicateName.trim()}
               >
-                {loading ? "Duplicating..." : "Duplicate"}
+                {loading ? t('owner_duplicating') : t('owner_duplicate')}
               </Button>
               <Button
                 type="button"
@@ -416,7 +414,7 @@ const Proj = () => {
                 onClick={closeDuplicate}
                 disabled={loading}
               >
-                Cancel
+                {t('owner_cancel')}
               </Button>
             </div>
           </DialogPanel>

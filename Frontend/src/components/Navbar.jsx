@@ -1,8 +1,10 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../Contexts/AuthContext";
 
 const Navbar = () => {
+  const { t } = useTranslation();
   const { isLoggedIn, userRole, signOut, profile } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
@@ -54,7 +56,7 @@ const Navbar = () => {
                 }`
               }
             >
-              Home
+              {t('navbar_home')}
             </NavLink>
             <NavLink
               to="/courts"
@@ -63,7 +65,7 @@ const Navbar = () => {
                 }`
               }
             >
-              Courts
+              {t('navbar_courts')}
             </NavLink>
             <NavLink
               to="/profile"
@@ -72,7 +74,7 @@ const Navbar = () => {
                 }`
               }
             >
-              Profile
+              {t('navbar_profile')}
             </NavLink>
             {userRole === "owner" && (
               <NavLink
@@ -82,7 +84,7 @@ const Navbar = () => {
                   }`
                 }
               >
-                MyCourts
+                {t('navbar_mycourts')}
               </NavLink>
             )}
           </div>
@@ -95,7 +97,7 @@ const Navbar = () => {
               className="bg-red-600 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-red-700 transition duration-300 transform hover:scale-105"
               onClick={handleLogout}
             >
-              Logout
+              {t('navbar_logout')}
             </button>
           ) : (
             <>
@@ -103,13 +105,13 @@ const Navbar = () => {
                 to="/login"
                 className="bg-gradient-to-r font-bold bg-rose-900 text-white px-4 py-2 rounded-lg shadow-lg hover:from-lime-900 hover:to-blue-900 transition duration-300 transform hover:scale-105"
               >
-                Login
+                {t('navbar_login')}
               </Link>
               <Link
                 to="/register"
                 className="bg-gradient-to-r font-bold bg-sky-800 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-sky-600 transition duration-300 transform hover:scale-105"
               >
-                Signup
+                {t('navbar_signup')}
               </Link>
             </>
           )}
@@ -128,7 +130,7 @@ const Navbar = () => {
             }
 
           >
-            Home
+            {t('navbar_home')}
           </NavLink>
           <NavLink
             to="courts"
@@ -139,7 +141,7 @@ const Navbar = () => {
             }
 
           >
-            Courts
+            {t('navbar_courts')}
           </NavLink>
           <NavLink
             to="profile/settings"
@@ -150,7 +152,7 @@ const Navbar = () => {
             }
 
           >
-            Profile
+            {t('navbar_profile')}
           </NavLink>
 
           {userRole === "owner" && (
@@ -163,7 +165,7 @@ const Navbar = () => {
               }
 
             >
-              MyCourts
+              {t('navbar_mycourts')}
             </NavLink>
           )}
 
@@ -175,7 +177,7 @@ const Navbar = () => {
                 setIsMenuOpen(false);
               }}
             >
-              Logout
+              {t('navbar_logout')}
             </button>
           ) : (
             <>
@@ -184,14 +186,14 @@ const Navbar = () => {
                 className="bg-blue-500 text-white px-4 py-2 rounded-full shadow-md hover:bg-blue-600 transition duration-300"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Login
+                {t('navbar_login')}
               </Link>
               <Link
                 to="/register"
                 className="bg-green-500 text-white px-4 py-2 rounded-full shadow-md hover:bg-green-600 transition duration-300"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Signup
+                {t('navbar_signup')}
               </Link>
             </>
           )}

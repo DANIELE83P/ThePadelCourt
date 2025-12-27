@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../Contexts/AuthContext";
 
 export default function ChangePassword() {
+  const { t } = useTranslation();
   const { changePassword } = useAuth();
   const [newPasswordInput, setNewPasswordInput] = useState("");
   const [confirmPasswordInput, setConfirmPasswordInput] = useState("");
@@ -24,13 +26,13 @@ export default function ChangePassword() {
 
     // Validate passwords match
     if (newPasswordInput !== confirmPasswordInput) {
-      setErrorMessage("Passwords do not match");
+      setErrorMessage(t('cp_err_mismatch'));
       return;
     }
 
     // Validate password length
     if (newPasswordInput.length < 6) {
-      setErrorMessage("Password must be at least 6 characters");
+      setErrorMessage(t('cp_err_min_length'));
       return;
     }
 
@@ -39,16 +41,16 @@ export default function ChangePassword() {
       const { error } = await changePassword(newPasswordInput);
 
       if (error) {
-        setErrorMessage(error.message || "Failed to change password");
+        setErrorMessage(error.message || t('cp_err_failed'));
         return;
       }
 
-      setSuccessMessage("Password changed successfully!");
+      setSuccessMessage(t('cp_succ_changed'));
       setNewPasswordInput("");
       setConfirmPasswordInput("");
     } catch (error) {
       console.error("Error changing password:", error);
-      setErrorMessage("There was an error processing your request.");
+      setErrorMessage(t('cp_err_generic'));
     } finally {
       setLoading(false);
     }
@@ -58,7 +60,7 @@ export default function ChangePassword() {
     <div className="max-w-2xl mx-36 p-6 w-full">
       <br /><br />
       <h1 className="text-2xl text-center mb-4 font-semibold">
-        Change Password
+        {t('cp_title')}
       </h1>
       <form className="space-y-4" onSubmit={handleSubmit}>
         <div>
@@ -66,7 +68,7 @@ export default function ChangePassword() {
             htmlFor="newpassword"
             className="block text-sm font-medium text-gray-700"
           >
-            New Password <span className="text-red-500">*</span>
+            {t('cp_new_password')} <span className="text-red-500">*</span>
           </label>
           <input
             type="password"
@@ -74,7 +76,7 @@ export default function ChangePassword() {
             id="newpassword"
             value={newPasswordInput}
             onChange={handleNewPasswordChange}
-            placeholder="Enter new password"
+            placeholder={t('cp_placeholder_new')}
             required
             minLength={6}
           />
@@ -84,7 +86,7 @@ export default function ChangePassword() {
             htmlFor="confirmpassword"
             className="block text-sm font-medium text-gray-700"
           >
-            Confirm New Password <span className="text-red-500">*</span>
+            {t('cp_confirm_password')} <span className="text-red-500">*</span>
           </label>
           <input
             type="password"
@@ -92,7 +94,7 @@ export default function ChangePassword() {
             id="confirmpassword"
             value={confirmPasswordInput}
             onChange={handleConfirmPasswordChange}
-            placeholder="Confirm new password"
+            placeholder={t('cp_placeholder_confirm')}
             required
             minLength={6}
           />
@@ -113,14 +115,13 @@ export default function ChangePassword() {
             className="w-full max-w-44 mt-4 bg-blue-600 text-white font-semibold py-2 rounded-md hover:bg-blue-700 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={loading}
           >
-            {loading ? "Saving..." : "Save Changes"}
+            {loading ? t('cp_saving') : t('cp_save')}
           </button>
         </div>
       </form>
       <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded">
         <p className="text-sm text-blue-800">
-          <strong>Note:</strong> With Supabase Auth, you don't need to enter your old password.
-          Just enter your new password twice to confirm.
+          <strong>{t('cp_note_label')}</strong> {t('cp_note_text')}
         </p>
       </div>
     </div>

@@ -1,4 +1,5 @@
 /* eslint-disable react/no-unescaped-entities */
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { User, Key, ArrowRight } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
@@ -8,6 +9,7 @@ import { useState } from "react";
 import { useAuth } from "../Contexts/AuthContext";
 
 const LoginForm = () => {
+  const { t } = useTranslation();
   const [errorMessage, setErrorMessage] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const { signIn } = useAuth();
@@ -15,11 +17,11 @@ const LoginForm = () => {
 
   const validationSchema = Yup.object({
     email: Yup.string()
-      .email("Invalid Email Format")
-      .required("Email is Required"),
+      .email(t('val_email_invalid'))
+      .required(t('val_email_required')),
     password: Yup.string()
-      .min(6, "Password must be at least 6 characters")
-      .required("Password is Required"),
+      .min(6, t('val_password_min'))
+      .required(t('val_password_required')),
   });
 
   const handleSubmit = async (values) => {
@@ -31,24 +33,24 @@ const LoginForm = () => {
 
       if (error) {
         if (error.message.includes('Invalid login credentials')) {
-          setErrorMessage("Invalid email or password");
+          setErrorMessage(t('err_invalid_credentials'));
         } else if (error.message.includes('Email not confirmed')) {
-          setErrorMessage("Please confirm your email before logging in");
+          setErrorMessage(t('err_confirm_email'));
         } else {
-          setErrorMessage(error.message || "Login failed");
+          setErrorMessage(error.message || t('err_login_failed'));
         }
         return;
       }
 
       console.log("Login Successful", data);
-      setSuccessMessage("Login successful! Redirecting...");
+      setSuccessMessage(t('succ_login'));
 
       setTimeout(() => {
         navigate("/", { replace: true });
       }, 1000);
     } catch (error) {
       console.error("Login error:", error);
-      setErrorMessage("An unexpected error occurred. Please try again.");
+      setErrorMessage(t('err_unexpected'));
     }
   };
 
@@ -61,7 +63,7 @@ const LoginForm = () => {
         className="bg-white bg-opacity-10 backdrop-filter backdrop-blur-md rounded-3xl p-8 shadow-2xl w-full max-w-md border border-white border-opacity-20"
       >
         <h2 className="text-4xl font-extrabold text-center text-white mb-8 tracking-tight">
-          Login
+          {t('login_title')}
         </h2>
         <Formik
           initialValues={{ email: "", password: "" }}
@@ -81,7 +83,7 @@ const LoginForm = () => {
                 <Field
                   type="email"
                   className="w-full bg-white bg-opacity-10 text-white placeholder-white placeholder-opacity-70 rounded-xl py-3 px-10 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 transition duration-300"
-                  placeholder="Email"
+                  placeholder={t('login_email_placeholder')}
                   name="email"
                 />
                 <ErrorMessage
@@ -98,7 +100,7 @@ const LoginForm = () => {
                 <Field
                   type="password"
                   className="w-full bg-white bg-opacity-10 text-white placeholder-white placeholder-opacity-70 rounded-xl py-3 px-10 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 transition duration-300"
-                  placeholder="Password"
+                  placeholder={t('login_password_placeholder')}
                   name="password"
                 />
                 <ErrorMessage
@@ -129,7 +131,7 @@ const LoginForm = () => {
                 disabled={isSubmitting}
                 className="w-full bg-white text-black font-bold py-3 px-4 rounded-xl shadow-lg hover:bg-opacity-90 transition duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? "Signing In..." : "Sign In"}
+                {isSubmitting ? t('login_submitting') : t('login_submit')}
                 <ArrowRight className="ml-2" size={20} />
               </motion.button>
             </Form>
@@ -137,9 +139,9 @@ const LoginForm = () => {
         </Formik>
         <div className="mt-8 text-center">
           <p className="text-white text-opacity-80">
-            Don't have an account?{" "}
+            {t('login_no_account')}{" "}
             <Link to="/register" className="font-bold hover:underline">
-              Sign Up
+              {t('login_signup_link')}
             </Link>
           </p>
         </div>

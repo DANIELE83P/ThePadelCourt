@@ -1,4 +1,6 @@
 import { createRoot } from "react-dom/client";
+import { Suspense } from "react";
+import "./i18n";
 import App from "./App.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
@@ -19,6 +21,17 @@ import YourReservations from "./components/UserProfile/YourReservations.jsx";
 import Bookk from "./components/Home/bookk.jsx";
 
 const router = createBrowserRouter([
+  // Owner Dashboard - Standalone route (no navbar/footer)
+  {
+    path: "ownerpage",
+    element: (
+      <ProtectedRoute allowedRoles={['owner', 'admin']}>
+        <Owner />
+      </ProtectedRoute>
+    ),
+    errorElement: <ErrorPage />,
+  },
+  // Client-facing routes with navbar/footer
   {
     path: "/",
     element: <App />,
@@ -31,14 +44,6 @@ const router = createBrowserRouter([
       {
         path: "login",
         element: <LoginPage />,
-      },
-      {
-        path: "ownerpage",
-        element: (
-          <ProtectedRoute allowedRoles={['owner', 'admin']}>
-            <Owner />
-          </ProtectedRoute>
-        ),
       },
       {
         path: "/register",
@@ -80,6 +85,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")).render(
   <AuthProvider>
-    <RouterProvider router={router} />
+    <Suspense fallback="loading">
+      <RouterProvider router={router} />
+    </Suspense>
   </AuthProvider>
 );

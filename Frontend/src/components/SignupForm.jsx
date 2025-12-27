@@ -1,4 +1,5 @@
 /* eslint-disable react/no-unescaped-entities */
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { User, Key, Mail } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
@@ -8,6 +9,7 @@ import { useState } from "react";
 import { useAuth } from "../Contexts/AuthContext";
 
 const SignUpForm = () => {
+  const { t } = useTranslation();
   const [serverError, setServerError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const navigate = useNavigate();
@@ -15,17 +17,17 @@ const SignUpForm = () => {
 
   const validationSchema = Yup.object({
     name: Yup.string()
-      .min(4, "Name must be at least 4 characters")
-      .required("Name is Required"),
+      .min(4, t('val_name_min'))
+      .required(t('val_name_required')),
     email: Yup.string()
-      .email("Invalid Email Format")
-      .required("Email is Required"),
+      .email(t('val_email_invalid'))
+      .required(t('val_email_required')),
     password: Yup.string()
-      .min(6, "Password must be at least 6 characters")
-      .required("Password is Required"),
+      .min(6, t('val_password_min'))
+      .required(t('val_password_required')),
     role: Yup.string()
-      .oneOf(['user', 'owner'], 'Please select a role')
-      .required("Role is Required"),
+      .oneOf(['user', 'owner'], t('val_role_select'))
+      .required(t('val_role_required')),
   });
 
   const handleSubmit = async (values) => {
@@ -42,22 +44,22 @@ const SignUpForm = () => {
 
       if (error) {
         if (error.message.includes('already registered')) {
-          setServerError("Email already registered. Please login instead.");
+          setServerError(t('err_email_registered'));
         } else {
-          setServerError(error.message || "Registration failed");
+          setServerError(error.message || t('err_registration_failed'));
         }
         return;
       }
 
       console.log("Signup Successful", data);
-      setSuccessMessage("Registration successful! Redirecting to login...");
+      setSuccessMessage(t('succ_signup'));
 
       setTimeout(() => {
         navigate("/login");
       }, 2000);
     } catch (error) {
       console.error("Signup error:", error);
-      setServerError("An unexpected error occurred. Please try again.");
+      setServerError(t('err_unexpected'));
     }
   };
 
@@ -70,7 +72,7 @@ const SignUpForm = () => {
         className="bg-white bg-opacity-10 backdrop-filter backdrop-blur-md rounded-3xl p-8 shadow-2xl w-full max-w-md border border-white border-opacity-20"
       >
         <h2 className="text-4xl font-extrabold text-center text-white mb-8 tracking-tight">
-          Register
+          {t('signup_title')}
         </h2>
         <Formik
           initialValues={{ name: "", email: "", password: "", role: "" }}
@@ -90,7 +92,7 @@ const SignUpForm = () => {
                 <Field
                   type="text"
                   className="w-full bg-white bg-opacity-10 text-white placeholder-white placeholder-opacity-70 rounded-xl py-3 px-10 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 transition duration-300"
-                  placeholder="Name"
+                  placeholder={t('signup_name_placeholder')}
                   name="name"
                 />
                 <ErrorMessage
@@ -107,7 +109,7 @@ const SignUpForm = () => {
                 <Field
                   type="email"
                   className="w-full bg-white bg-opacity-10 text-white placeholder-white placeholder-opacity-70 rounded-xl py-3 px-10 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 transition duration-300"
-                  placeholder="Email"
+                  placeholder={t('signup_email_placeholder')}
                   name="email"
                 />
                 <ErrorMessage
@@ -124,7 +126,7 @@ const SignUpForm = () => {
                 <Field
                   type="password"
                   className="w-full bg-white bg-opacity-10 text-white placeholder-white placeholder-opacity-70 rounded-xl py-3 px-10 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 transition duration-300"
-                  placeholder="Password"
+                  placeholder={t('signup_password_placeholder')}
                   name="password"
                 />
                 <ErrorMessage
@@ -136,11 +138,11 @@ const SignUpForm = () => {
               <div className="text-white flex gap-4 items-center mb-4 font-bold">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <Field type="radio" name="role" value="owner" className="cursor-pointer" />
-                  Owner
+                  {t('signup_role_owner')}
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <Field type="radio" name="role" value="user" className="cursor-pointer" />
-                  User
+                  {t('signup_role_user')}
                 </label>
               </div>
               <ErrorMessage
@@ -170,16 +172,16 @@ const SignUpForm = () => {
                 disabled={isSubmitting}
                 className="w-full bg-white text-black font-bold py-3 px-4 rounded-xl shadow-lg hover:bg-opacity-90 transition duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? "Signing Up..." : "Sign Up"}
+                {isSubmitting ? t('signup_submitting') : t('signup_submit')}
               </motion.button>
             </Form>
           )}
         </Formik>
         <div className="mt-8 text-center">
           <p className="text-white font-semibold text-opacity-80">
-            Already a member?{" "}
+            {t('signup_already_member')}{" "}
             <Link to="/login" className="font-bold hover:underline">
-              Login
+              {t('signup_login_link')}
             </Link>
           </p>
         </div>

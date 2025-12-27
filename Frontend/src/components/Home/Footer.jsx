@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   Facebook,
   Instagram,
@@ -9,6 +10,7 @@ import {
 } from "lucide-react";
 
 export default function Footer() {
+  const { t } = useTranslation();
   return (
     <footer className="bg-gray-900 text-gray-300">
       <div className="max-w-6xl mx-auto px-4 py-12">
@@ -16,12 +18,10 @@ export default function Footer() {
           {/* About Section */}
           <div>
             <h3 className="text-white text-lg font-semibold mb-4">
-              About Padel Finder
+              {t('footer_about_title')}
             </h3>
             <p className="text-gray-400 mb-4">
-              Your go-to platform for finding and booking the best padel courts
-              in your area. Join the fastest-growing racquet sport community
-              today!
+              {t('footer_about_text')}
             </p>
             <div className="flex space-x-4">
               <a href="#" className="hover:text-white transition-colors">
@@ -42,32 +42,32 @@ export default function Footer() {
           {/* Quick Links */}
           <div>
             <h3 className="text-white text-lg font-semibold mb-4">
-              Quick Links
+              {t('footer_quick_links')}
             </h3>
             <ul className="space-y-2">
               <li>
                 <a href="#" className="hover:text-white transition-colors">
-                  Find Courts
+                  {t('footer_find_courts')}
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-white transition-colors">
-                  Book a Session
+                  {t('footer_book_session')}
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-white transition-colors">
-                  Tournaments
+                  {t('footer_tournaments')}
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-white transition-colors">
-                  Coaching
+                  {t('footer_coaching')}
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-white transition-colors">
-                  Equipment Shop
+                  {t('footer_shop')}
                 </a>
               </li>
             </ul>
@@ -76,7 +76,7 @@ export default function Footer() {
           {/* Contact Info */}
           <div>
             <h3 className="text-white text-lg font-semibold mb-4">
-              Contact Us
+              {t('footer_contact_us')}
             </h3>
             <ul className="space-y-2">
               <li className="flex items-center">
@@ -102,19 +102,19 @@ export default function Footer() {
           {/* Newsletter */}
           <div>
             <h3 className="text-white text-lg font-semibold mb-4">
-              Newsletter
+              {t('footer_newsletter')}
             </h3>
             <p className="text-gray-400 mb-4">
-              Subscribe to get updates on new courts and special offers!
+              {t('footer_newsletter_text')}
             </p>
             <form className="flex flex-col space-y-2">
               <input
                 type="email"
-                placeholder="Your email address"
+                placeholder={t('footer_email_placeholder')}
                 className="bg-gray-800 text-white px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">
-                Subscribe
+                {t('footer_subscribe')}
               </button>
             </form>
           </div>
@@ -125,13 +125,13 @@ export default function Footer() {
           <p>&copy; 2024 Padel Finder. All rights reserved.</p>
           <div className="mt-4 md:mt-0">
             <a href="#" className="mx-2 hover:text-white transition-colors">
-              Privacy Policy
+              {t('footer_privacy')}
             </a>
             <a href="#" className="mx-2 hover:text-white transition-colors">
-              Terms of Service
+              {t('footer_terms')}
             </a>
             <a href="#" className="mx-2 hover:text-white transition-colors">
-              Cookie Policy
+              {t('footer_cookies')}
             </a>
           </div>
         </div>

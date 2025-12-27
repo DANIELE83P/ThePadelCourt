@@ -1,0 +1,558 @@
+/* Owner Dashboard - Dark Premium Sidebar Theme */
+
+/* ===== CSS Variables ===== */
+:root {
+  --owner-bg-primary: #0f1119;
+  --owner-bg-secondary: #1a1d2e;
+  --owner-bg-sidebar: linear-gradient(180deg, #1a1d2e 0%, #0f1119 100%);
+  --owner-accent: #22c55e;
+  --owner-accent-hover: #16a34a;
+  --owner-text-primary: #ffffff;
+  --owner-text-secondary: #94a3b8;
+  --owner-text-muted: #64748b;
+  --owner-border: #2d3142;
+  --owner-card-bg: #1e2235;
+  --owner-sidebar-width: 260px;
+  --owner-sidebar-collapsed: 72px;
+  --owner-header-height: 64px;
+}
+
+/* ===== Owner Layout Container ===== */
+.owner-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--owner-bg-primary);
+}
+
+/* ===== Sidebar ===== */
+.owner-sidebar {
+  width: var(--owner-sidebar-width);
+  background: var(--owner-bg-sidebar);
+  border-right: 1px solid var(--owner-border);
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  z-index: 50;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.owner-sidebar.collapsed {
+  width: var(--owner-sidebar-collapsed);
+}
+
+.owner-sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.owner-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.owner-sidebar::-webkit-scrollbar-thumb {
+  background: var(--owner-border);
+  border-radius: 4px;
+}
+
+/* ===== Sidebar Header ===== */
+.owner-sidebar-header {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--owner-border);
+  min-height: 72px;
+}
+
+.owner-sidebar-logo {
+  width: 40px;
+  height: 40px;
+  background: var(--owner-accent);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: white;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.owner-sidebar-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--owner-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+.owner-sidebar.collapsed .owner-sidebar-title {
+  opacity: 0;
+  width: 0;
+}
+
+/* ===== Sidebar Toggle Button ===== */
+.owner-sidebar-toggle {
+  position: absolute;
+  right: -12px;
+  top: 28px;
+  width: 24px;
+  height: 24px;
+  background: var(--owner-accent);
+  border: 2px solid var(--owner-bg-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.3s ease, background-color 0.2s ease;
+  z-index: 10;
+}
+
+.owner-sidebar-toggle:hover {
+  background: var(--owner-accent-hover);
+  transform: scale(1.1);
+}
+
+.owner-sidebar-toggle svg {
+  width: 14px;
+  height: 14px;
+  color: white;
+  transition: transform 0.3s ease;
+}
+
+.owner-sidebar.collapsed .owner-sidebar-toggle svg {
+  transform: rotate(180deg);
+}
+
+/* ===== Sidebar Navigation ===== */
+.owner-sidebar-nav {
+  flex: 1;
+  padding: 16px 12px;
+}
+
+/* ===== Menu Section ===== */
+.owner-menu-section {
+  margin-bottom: 24px;
+}
+
+.owner-menu-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--owner-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0 12px;
+  margin-bottom: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+.owner-sidebar.collapsed .owner-menu-section-title {
+  opacity: 0;
+  height: 0;
+  margin: 0;
+}
+
+/* ===== Menu Items ===== */
+.owner-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--owner-text-secondary);
+  text-decoration: none;
+  margin-bottom: 4px;
+  position: relative;
+}
+
+.owner-menu-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--owner-text-primary);
+}
+
+.owner-menu-item.active {
+  background: rgba(34, 197, 94, 0.15);
+  color: var(--owner-accent);
+}
+
+.owner-menu-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 24px;
+  background: var(--owner-accent);
+  border-radius: 0 4px 4px 0;
+}
+
+.owner-menu-item-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.owner-menu-item-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.owner-menu-item-text {
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+.owner-sidebar.collapsed .owner-menu-item-text {
+  opacity: 0;
+  width: 0;
+}
+
+/* ===== Tooltip for collapsed sidebar ===== */
+.owner-sidebar.collapsed .owner-menu-item:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 60px;
+  background: var(--owner-card-bg);
+  color: var(--owner-text-primary);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  z-index: 100;
+  border: 1px solid var(--owner-border);
+}
+
+/* ===== Main Content Area ===== */
+.owner-main {
+  flex: 1;
+  margin-left: var(--owner-sidebar-width);
+  min-height: 100vh;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--owner-bg-primary);
+}
+
+.owner-sidebar.collapsed + .owner-main,
+.owner-main.collapsed {
+  margin-left: var(--owner-sidebar-collapsed);
+}
+
+/* ===== Main Header ===== */
+.owner-header {
+  height: var(--owner-header-height);
+  background: var(--owner-bg-secondary);
+  border-bottom: 1px solid var(--owner-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.owner-header-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--owner-text-primary);
+}
+
+.owner-header-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.owner-header-avatar {
+  width: 36px;
+  height: 36px;
+  background: var(--owner-accent);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.owner-header-logout {
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid var(--owner-border);
+  border-radius: 8px;
+  color: var(--owner-text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.owner-header-logout:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--owner-text-muted);
+  color: var(--owner-text-primary);
+}
+
+/* ===== Content Container ===== */
+.owner-content {
+  padding: 24px;
+  min-height: calc(100vh - var(--owner-header-height));
+}
+
+/* ===== Dashboard Cards ===== */
+.owner-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.owner-stat-card {
+  background: var(--owner-card-bg);
+  border: 1px solid var(--owner-border);
+  border-radius: 12px;
+  padding: 20px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.owner-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.owner-stat-card-icon {
+  width: 44px;
+  height: 44px;
+  background: rgba(34, 197, 94, 0.15);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.owner-stat-card-icon svg {
+  width: 22px;
+  height: 22px;
+  color: var(--owner-accent);
+}
+
+.owner-stat-card-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--owner-text-primary);
+  margin-bottom: 4px;
+}
+
+.owner-stat-card-label {
+  font-size: 13px;
+  color: var(--owner-text-muted);
+}
+
+/* ===== Quick Actions ===== */
+.owner-quick-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.owner-quick-action {
+  background: var(--owner-card-bg);
+  border: 1px solid var(--owner-border);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--owner-text-primary);
+  text-decoration: none;
+}
+
+.owner-quick-action:hover {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: var(--owner-accent);
+}
+
+.owner-quick-action-icon {
+  width: 40px;
+  height: 40px;
+  background: rgba(34, 197, 94, 0.15);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.owner-quick-action-icon svg {
+  width: 20px;
+  height: 20px;
+  color: var(--owner-accent);
+}
+
+.owner-quick-action-text {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ===== Section Cards (for existing components) ===== */
+.owner-section-card {
+  background: var(--owner-card-bg);
+  border: 1px solid var(--owner-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.owner-section-card-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--owner-border);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--owner-text-primary);
+}
+
+.owner-section-card-body {
+  padding: 20px;
+}
+
+/* Override existing component styles when inside owner layout */
+.owner-content .bg-white {
+  background: var(--owner-card-bg) !important;
+  color: var(--owner-text-primary);
+  border: 1px solid var(--owner-border);
+}
+
+.owner-content input,
+.owner-content select,
+.owner-content textarea {
+  background: var(--owner-bg-primary) !important;
+  color: var(--owner-text-primary) !important;
+  border-color: var(--owner-border) !important;
+}
+
+.owner-content input::placeholder,
+.owner-content textarea::placeholder {
+  color: var(--owner-text-muted) !important;
+}
+
+.owner-content label,
+.owner-content .text-gray-700,
+.owner-content .text-gray-800,
+.owner-content .text-gray-900 {
+  color: var(--owner-text-secondary) !important;
+}
+
+.owner-content .text-gray-500,
+.owner-content .text-gray-600 {
+  color: var(--owner-text-muted) !important;
+}
+
+.owner-content h1,
+.owner-content h2,
+.owner-content h3 {
+  color: var(--owner-text-primary) !important;
+}
+
+.owner-content .border-gray-200,
+.owner-content .border-gray-100,
+.owner-content .border-gray-300 {
+  border-color: var(--owner-border) !important;
+}
+
+.owner-content .bg-gray-50,
+.owner-content .bg-gray-100 {
+  background: var(--owner-bg-secondary) !important;
+}
+
+/* ===== Responsive Design ===== */
+@media (max-width: 1024px) {
+  .owner-sidebar {
+    transform: translateX(-100%);
+  }
+  
+  .owner-sidebar.mobile-open {
+    transform: translateX(0);
+  }
+  
+  .owner-main {
+    margin-left: 0;
+  }
+  
+  .owner-header {
+    padding-left: 16px;
+  }
+  
+  .owner-mobile-toggle {
+    display: flex;
+  }
+}
+
+@media (max-width: 768px) {
+  .owner-content {
+    padding: 16px;
+  }
+  
+  .owner-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Mobile menu toggle button */
+.owner-mobile-toggle {
+  display: none;
+  width: 40px;
+  height: 40px;
+  background: var(--owner-bg-secondary);
+  border: 1px solid var(--owner-border);
+  border-radius: 8px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.owner-mobile-toggle svg {
+  width: 20px;
+  height: 20px;
+  color: var(--owner-text-primary);
+}
+
+@media (max-width: 1024px) {
+  .owner-mobile-toggle {
+    display: flex;
+  }
+}
+
+/* Overlay for mobile */
+.owner-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 45;
+}
+
+.owner-overlay.visible {
+  display: block;
+}

@@ -1,24 +1,26 @@
 import { Star, Quote } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function TestMonialsSection() {
+  const { t } = useTranslation();
   const testimonials = [
     {
-      text: "PadelCorut made it super easy for me to find and book a court near my home. I absolutely love the platform!",
+      text: t('test_text_1'),
       author: "Sarah E.",
       rating: 5,
-      role: "Regular Player",
+      role: t('test_role_regular'),
     },
     {
-      text: "Great experience! The booking process was seamless, and the courts were top-notch. Highly recommend.",
+      text: t('test_text_2'),
       author: "Ahmed K.",
       rating: 5,
-      role: "Padel Enthusiast",
+      role: t('test_role_enthusiast'),
     },
     {
-      text: "Convenient and reliable service! I've booked through Padel Finder multiple times, and it's always been great.",
+      text: t('test_text_3'),
       author: "Mona A.",
       rating: 5,
-      role: "Professional Player",
+      role: t('test_role_pro'),
     },
   ];
 
@@ -27,7 +29,7 @@ export default function TestMonialsSection() {
       <div className="max-w-6xl mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            What Our Customers Are Saying
+            {t('testimonials_title')}
           </h2>
           <div className="w-24 h-1 bg-blue-500 mx-auto"></div>
         </div>

@@ -1,7 +1,9 @@
 /* eslint-disable react/prop-types */
 import { MapPin, DollarSign, Edit, Trash2, Copy } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const Appp = ({ product, setEtit, openRemove, openDuplicate }) => {
+  const { t } = useTranslation();
   const handleEdit = () => {
     setEtit(product);
   };
@@ -20,19 +22,19 @@ const Appp = ({ product, setEtit, openRemove, openDuplicate }) => {
       <div className="text-gray-600 mb-4">
         <div className="flex items-center mb-1">
           <MapPin className="w-5 h-5 text-blue-500 mr-2" />
-          <p className="text-md font-bold">Location</p>
+          <p className="text-md font-bold">{t('location')}</p>
         </div>
         <span className="text-lg font-semibold">{product.location}</span>
       </div>
 
       <div className="flex flex-col  gap-3 mb-4">
-        <p className="font-semibold ">operatingHours</p>
+        <p className="font-semibold ">{t('operating_hours')}</p>
         <div className=" flex gap-2">
-          <span>From</span>
+          <span>{t('from')}</span>
           <span className="px-3 py-1 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-500 transition-colors">
             {product.operatingHours?.start} AM
           </span>
-          <span>To</span>
+          <span>{t('to')}</span>
           <span className="px-3 py-1 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-500 transition-colors">
             {product.operatingHours?.end} PM
           </span>
@@ -40,7 +42,7 @@ const Appp = ({ product, setEtit, openRemove, openDuplicate }) => {
       </div>
 
       <div className="flex items-center justify-between mb-4 text-gray-700">
-        <p className="text-lg font-medium">Price per Hour:</p>
+        <p className="text-lg font-medium">{t('price_per_hour')}:</p>
         <div className="flex items-center ">
           <span className="text-xl font-bold text-green-600">
             {product.pricePerHour}
@@ -56,14 +58,14 @@ const Appp = ({ product, setEtit, openRemove, openDuplicate }) => {
             onClick={handleEdit}
           >
             <Edit className="w-4 h-4 mr-1" />
-            Edit
+            {t('edit')}
           </button>
           <button
             className="flex-1 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-lg py-2 hover:from-red-700 hover:to-red-600 transition-all transform hover:-translate-y-1 flex items-center justify-center text-sm"
             onClick={openRemove}
           >
             <Trash2 className="w-4 h-4 mr-1" />
-            Delete
+            {t('delete')}
           </button>
         </div>
         <button
@@ -71,7 +73,7 @@ const Appp = ({ product, setEtit, openRemove, openDuplicate }) => {
           onClick={openDuplicate}
         >
           <Copy className="w-4 h-4 mr-1" />
-          Duplicate
+          {t('duplicate')}
         </button>
       </div>
     </div>

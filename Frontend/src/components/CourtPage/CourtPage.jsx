@@ -1,10 +1,12 @@
 /* eslint-disable react-refresh/only-export-components */
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "../../lib/supabase";
 import withGuard from "../../utils/withGuard";
 import CourtCart from "../CourtCart";
 
 const CourtPage = () => {
+  const { t } = useTranslation();
   const [searchZone, setSearchZone] = useState("");
   const [filteredCourts, setFilteredCourts] = useState([]);
   const [allCourts, setAllCourts] = useState([]);
@@ -70,14 +72,14 @@ const CourtPage = () => {
   if (loading) {
     return (
       <div className="pt-20 px-4 text-center">
-        <p className="text-lg">Loading courts...</p>
+        <p className="text-lg">{t('courts_loading')}</p>
       </div>
     );
   }
 
   return (
     <div className="pt-20 px-4 max-md:pr-0 mb-4 max-md:my-2 max-md:mx-auto">
-      <h1 className="text-4xl font-bold text-center mb-8">Our Courts</h1>
+      <h1 className="text-4xl font-bold text-center mb-8">{t('courts_title')}</h1>
 
       {/* Search Filters */}
       <div className="mb-6 mr-3">
@@ -88,7 +90,7 @@ const CourtPage = () => {
             onChange={(e) => setSearchZone(e.target.value)}
             onKeyDown={handleKeyDown}
           >
-            <option value="">All Locations</option>
+            <option value="">{t('courts_all_locations')}</option>
             {zones.map((zone, index) => (
               <option key={index} value={zone}>
                 {zone}
@@ -100,14 +102,14 @@ const CourtPage = () => {
             onClick={handleSearch}
             className="bg-blue-500 text-white py-2 px-6 rounded-lg hover:bg-blue-600 transition-colors duration-300"
           >
-            Search
+            {t('courts_search')}
           </button>
 
           <button
             onClick={handleReset}
             className="bg-gray-500 text-white py-2 px-6 rounded-lg hover:bg-gray-600 transition-colors duration-300"
           >
-            Reset
+            {t('courts_reset')}
           </button>
         </div>
       </div>
@@ -122,8 +124,8 @@ const CourtPage = () => {
           <div className="col-span-full text-center py-10">
             <p className="text-lg text-gray-600">
               {searchZone
-                ? `No courts found in "${searchZone}"`
-                : "No courts available yet"}
+                ? `${t('courts_not_found_zone')} "${searchZone}"`
+                : t('courts_not_available')}
             </p>
           </div>
         )}

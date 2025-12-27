@@ -7,7 +7,10 @@ import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../Contexts/AuthContext";
 import toast, { Toaster } from "react-hot-toast";
 
+import { useTranslation } from "react-i18next";
+
 const Bookk = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -70,12 +73,12 @@ const Bookk = () => {
 
   const handleBooking = async () => {
     if (!selectedDate || !selectedTimeSlot) {
-      toast.error("Please select a date and a time slot");
+      toast.error(t('select_date_time'));
       return;
     }
 
     if (!user) {
-      toast.error("Please login to book a court");
+      toast.error(t('login_to_book'));
       return;
     }
 
@@ -110,7 +113,7 @@ const Bookk = () => {
         throw updateError;
       }
 
-      toast.success("Booking successful! Redirecting to your reservations...");
+      toast.success(t('booking_success'));
 
       setTimeout(() => {
         navigate('/profile/reservations');
@@ -126,7 +129,7 @@ const Bookk = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <p className="text-lg">Loading court details...</p>
+        <p className="text-lg">{t('loading_court_details')}</p>
       </div>
     );
   }
@@ -134,7 +137,7 @@ const Bookk = () => {
   if (!court) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <p className="text-lg text-red-600">Court not found</p>
+        <p className="text-lg text-red-600">{t('court_not_found')}</p>
       </div>
     );
   }
@@ -169,7 +172,7 @@ const Bookk = () => {
           </div>
 
           <div className="my-4">
-            <label className="font-semibold">Select Date:</label>
+            <label className="font-semibold">{t('select_date')}</label>
             <input
               type="date"
               className="border rounded p-2 ml-2 w-full md:w-auto"
@@ -180,7 +183,7 @@ const Bookk = () => {
           </div>
 
           <div className="my-4">
-            <label className="font-semibold block mb-2">Available Time Slots:</label>
+            <label className="font-semibold block mb-2">{t('available_time_slots')}</label>
             <div className="flex flex-wrap gap-2">
               {selectedDate ? (
                 availableTimeSlots.length > 0 ? (
@@ -189,25 +192,25 @@ const Bookk = () => {
                       key={slot.id}
                       onClick={() => setSelectedTimeSlot(slot)}
                       className={`border rounded p-2 ${selectedTimeSlot?.id === slot.id
-                          ? "bg-blue-500 text-white"
-                          : "bg-gray-200 hover:bg-gray-300"
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-200 hover:bg-gray-300"
                         }`}
                     >
                       {slot.time_slot_start} - {slot.time_slot_end}
                     </button>
                   ))
                 ) : (
-                  <p className="text-gray-600">No available time slots for this date.</p>
+                  <p className="text-gray-600">{t('no_slots_available')}</p>
                 )
               ) : (
-                <p className="text-gray-600">Please select a date first.</p>
+                <p className="text-gray-600">{t('select_date_first')}</p>
               )}
             </div>
           </div>
 
           {selectedTimeSlot && (
             <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-              <h2 className="font-semibold">Selected Time Slot:</h2>
+              <h2 className="font-semibold">{t('selected_time_slot')}</h2>
               <p className="text-lg">
                 {selectedTimeSlot.time_slot_start} - {selectedTimeSlot.time_slot_end}
               </p>
@@ -216,9 +219,9 @@ const Bookk = () => {
 
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mt-6 p-4 bg-gray-50 rounded-lg">
             <div>
-              <h2 className="font-semibold text-xl">Price summary</h2>
+              <h2 className="font-semibold text-xl">{t('price_summary')}</h2>
               <p className="text-gray-600 font-semibold">
-                €{pricePerHour} per hour
+                €{pricePerHour} {t('per_hour')}
               </p>
             </div>
             <div className="text-left md:text-right mt-4 md:mt-0">
@@ -226,7 +229,7 @@ const Bookk = () => {
                 €{pricePerHour}
               </h2>
               <p className="text-gray-500 font-semibold text-sm">
-                Taxes and charges included
+                {t('taxes_included')}
               </p>
             </div>
           </div>
@@ -237,7 +240,7 @@ const Bookk = () => {
               className="bg-blue-500 font-bold text-white py-3 px-8 rounded-lg hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed w-full md:w-auto"
               disabled={!selectedDate || !selectedTimeSlot || bookingLoading}
             >
-              {bookingLoading ? "Booking..." : "Book Now"}
+              {bookingLoading ? t('booking') : t('book_now')}
             </button>
           </div>
         </div>

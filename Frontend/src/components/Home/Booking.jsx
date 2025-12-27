@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import CourtCart from "../CourtCart";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
@@ -6,6 +7,7 @@ import "slick-carousel/slick/slick-theme.css";
 import { supabase } from "../../lib/supabase";
 
 const Book = () => {
+  const { t } = useTranslation();
   const [allCourts, setAllCourts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -59,7 +61,7 @@ const Book = () => {
   if (loading) {
     return (
       <div className="w-full text-center py-10">
-        <p className="text-lg">Loading courts...</p>
+        <p className="text-lg">{t('courts_loading')}</p>
       </div>
     );
   }
@@ -74,7 +76,7 @@ const Book = () => {
         </Slider>
       ) : (
         <div className="text-center py-10">
-          <p className="text-lg text-gray-600">No courts available yet</p>
+          <p className="text-lg text-gray-600">{t('courts_not_available')}</p>
         </div>
       )}
     </div>

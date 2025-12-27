@@ -3,11 +3,19 @@ import ContectSection from "../components/Home/ContectSection";
 import MainSection from "../components/Home/MainSection";
 import TestMonialsSection from "../components/Home/TestMonialsSection";
 
+import { useTranslation } from "react-i18next";
+
 export default function Home() {
+  const { t } = useTranslation();
   const [text, setText] = useState("");
-  const fullText =
-    "Welcome to Padel Court Reservation\nFind and book the best padel courts in your area with just a few clicks.";
+  const fullText = `${t('home_welcome_title')}\n${t('home_welcome_text')}`;
   const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    // Reset typing effect when language changes or component mounts
+    setText("");
+    setIndex(0);
+  }, [fullText]);
 
   useEffect(() => {
     if (index < fullText.length) {
@@ -18,7 +26,7 @@ export default function Home() {
 
       return () => clearTimeout(timer);
     }
-  }, [index]);
+  }, [index, fullText]);
 
   return (
     <>
