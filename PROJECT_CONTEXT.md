@@ -1,71 +1,101 @@
-# PROJECT CONTEXT - The Padel Court
+# 🎾 THE PADEL COURT - DOCUMENTAZIONE TECNICA E DI CONTESTO (v2.0)
 
-## 📄 Descrizione
-**The Padel Court** è una piattaforma completa per la gestione di centri sportivi di Padel. Si divide in due macro-aree:
-1. **Frontend Utente**: Permette ai giocatori di prenotare campi, gestire il proprio profilo, visualizzare le proprie card (promo e fidelity) e ricevere notifiche.
-2. **Dashboard Owner (2.0)**: Un sistema gestionale avanzato per i proprietari del club per gestire prenotazioni, listini prezzi, programmi fedeltà, chiusure, orari e analytics.
+Questo documento rappresenta la "Single Source of Truth" (SSOT) per lo sviluppo e la manutenzione della piattaforma **The Padel Court**. È progettato per fornire a sviluppatori e AI un contesto immediato, profondo e tecnico su ogni aspetto del sistema.
 
 ---
 
-## 🛠 Tecnologia
-- **Frontend**: React (Vite)
-- **Styling**: Tailwind CSS (per la nuova UI) + Bootstrap (legacy/utilità) + Vanilla CSS
-- **Backend/Database**: Supabase (PostgreSQL, Auth, Edge Functions)
-- **Stato/Auth**: Context API + Supabase Auth
-- **Notifiche**: Integrazione con NotificationAPI e regole personalizzate
-- **Lingua**: Italiano (i18next)
-- **Librerie Chiave**: Lucide React (icone), Framer Motion (animazioni), jsPDF/QRCode (generazione card), date-fns (date).
+## 🏗️ 1. ARCHITETTURA DEL SISTEMA
+
+### **Frontend (Vite + React)**
+- **Framework base**: React 18.
+- **Routing**: `react-router-dom` con rotte protette (`ProtectedRoute.jsx`).
+- **State Management**: React Context API (`AuthContext`, `ThemeContext`).
+- **Internazionalizzazione**: `i18next` con focus primario sulla lingua **Italiana**.
+- **UI/UX**: 
+    - **Aesthetics**: Design premium, dark mode di default per la sezione Owner.
+    - **Librerie UI**: Tailwind CSS (per la nuova UI 2.0), HeadlessUI, Framer Motion (animazioni), Bootstrap (limitato allo stretto necessario).
+    - **Iconografia**: Lucide React.
+    - **Visualizzazione**: `react-slick` per caroselli, `date-fns` per manipolazione date.
+
+### **Backend & Database (Supabase)**
+- **Database**: PostgreSQL ospitato su Supabase.
+- **Autenticazione**: Supabase Auth (Email/Password + Social Login).
+- **Storage**: Supabase Storage per immagini campi (`courts` bucket) e QR code.
+- **Logica Server**: Supabase Edge Functions (Deno) per invio email e logica complessa.
+- **SDK**: `@supabase/supabase-js`.
 
 ---
 
-## ✅ Funzionalità Implementate
+## 📊 2. MODELLO DATI (SCHEMA DATABASE)
 
-### Area Cliente
-- **Autenticazione**: Login (anche Social), Registrazione, Recupero Password.
-- **Profilo**: Gestione dati personali.
-- **Le Mie Card**:
-    - Visualizzazione pacchetti partite (Promo Cards).
-    - Visualizzazione Fidelity Cards con progresso timbri.
-    - Download PDF della card con QR Code scaricabile.
-    - **Aggiunta a Google Wallet** (Placeholder logico pronto per integrazione API).
-- **Prenotazioni**: Visualizzazione cronologia e stato prenotazioni.
+### **Core**
+- **`profiles`**: Estensione di `auth.users`. Contiene `full_name`, `email`, `phone`, `role`.
+- **`courts`**: Definisce i campi (nome, location, indoor/outdoor, prezzo_ora, orari_operativi, features, immagine).
+- **`court_availability`**: Tabella pivot fondamentale. Genera gli slot temporali (es. 09:00-10:30) per ogni data. Colonna chiave: `is_available`.
+- **`bookings`**: Registra le prenotazioni confermate. Collega `court_id` e `user_id`. Gestisce `player_names` (array) e `booking_type` (online/offline).
 
-### Dashboard Owner (2.0)
-- **Home**: Panoramica rapida e statistiche.
-- **Gestione Prenotazioni**: Calendario avanzato (Day, Week, Month, Agenda) con supporto a slot configurabili (es. 90 min).
-- **Configurazione Club**:
-    - Orari di apertura/chiusura.
-    - Chiusure straordinarie.
-    - Listini prezzi dinamici per campo/orario.
-- **Marketing & Fedeltà**:
-    - Creazione e gestione Promo Cards (pacchetti).
-    - Programmi Loyalty (timbri e premi).
-    - Assegnazione manuale di card agli utenti.
-- **Comunicazione**:
-    - Gestione template email.
-    - Invio comunicazioni/annunci.
-- **User Management**: Gestione completa dell'anagrafica utenti del club.
-- **Universal Scanner**: Sistema per scansionare le card dei clienti via QR Code.
+### **Loyalty & Marketing**
+- **`promo_cards`**: Definizioni dei pacchetti partite (es. "Pacchetto 10 partite").
+- **`user_promo_cards`**: Istanze vendute agli utenti. Traccia `remaining_credits`.
+- **`loyalty_programs`**: Definizioni programmi a timbri (es. "Ogni 10 partite, 1 gratis").
+- **`user_loyalty_cards`**: Traccia il progresso dei timbri (`current_stamps`) per il singolo utente.
+
+### **Configurazione**
+- **`club_settings`**: Orari globali, info contatto, logo club.
+- **`closures`**: Gestione chiusure straordinarie dei campi.
 
 ---
 
-## 🚀 Idee e Sviluppi Futuri
-- **Integrazione Pagamenti**: Stripe per l'acquisto di pacchetti e prenotazioni online.
-- **Match Making**: Sistema per trovare compagni di gioco basato sul livello.
-- **Analytics Avanzati**: Report dettagliati sui ricavi e l'occupazione dei campi.
-- **AI Assistant**: Integrazione chat/voice per prenotazioni rapide via WhatsApp (in fase di test).
-- **Integrazione Google Wallet API**: Passare dal placeholder alla generazione reale del JWT per aggiungere le card.
+## ⚙️ 3. LOGICA DI BUSINESS FONDAMENTALE
+
+### **Il Motore delle Prenotazioni (Booking Engine)**
+- **Generazione Slot**: La logica risiede in `modul.jsx`. Quando un campo viene creato, il sistema genera automaticamente slot di disponibilità (default 90 min) per un numero di giorni configurabile (`days_in_advance`).
+- **Format Orario**: Utilizza internamente un formato 12h (AM/PM) per compatibilità database storica, ma visualizza sempre nel frontend in **24h** per il mercato italiano.
+- **Validazione**: Le prenotazioni online scalano crediti dalle `user_promo_cards` o richiedono pagamento (futuro). Le prenotazioni offline (manuali da dashboard) permettono di inserire nomi manualmente senza che l'utente sia registrato.
+
+### **Sistema Loyalty & Promo**
+- **QR Code**: Ogni card utente (`UserCards.jsx`) ha un QR code univoco generato via `qrcode.js`.
+- **Validazione**: L'owner usa `UniversalScanner.jsx` (basato su `html5-qrcode`) per scansionare il QR del cliente e scalare un credito o aggiungere un timbro istantaneamente.
+- **Wallet**: Integrazione placeholder per **Google Wallet**. Permette il download della card in formato PDF (`jspdf`) come fallback sicuro.
 
 ---
 
-## 📐 Specifiche Tecniche
-- **Database Schema**:
-    - `profiles`: Dati utenti.
-    - `bookings`: Prenotazioni campi.
-    - `promo_cards` / `user_promo_cards`: Definizioni e istanze pacchetti.
-    - `loyalty_programs` / `user_loyalty_cards`: Definizioni e istanze fidelity.
-    - `club_settings`: Orari e info club.
-- **Infrastruttura**: Deployment su Vercel/Netlify (Frontend) e Supabase (Backend).
+## 🖥️ 4. DASHBOARD OWNER (2.0)
+
+La sezione amministrativa è situata in `/src/Owner` e segue uno standard estetico elevato:
+- **`OwnerLayout.jsx`**: Sidebar persistente, navigazione fluida e gestione stato globale dashboard.
+- **`BookingCalendar.jsx`**: Il centro di controllo. 4 viste:
+    - **Day**: Griglia verticale oraria per campo. Filtri per Mattina/Pomeriggio/Sera.
+    - **Week/Month**: Panoramica occupazione.
+    - **Agenda**: Lista cronologica pulita delle prenotazioni.
+- **`NewBookingModal.jsx`**: Gestisce la creazione rapida di prenotazioni, ricerca utenti in anagrafica e invio notifiche di conferma (Email/SMS).
+- **`AnalyticsDashboard.jsx`**: Visualizzazione performance del club.
 
 ---
-*Ultimo Aggiornamento: 2025-12-28*
+
+## 🚀 5. ROADMAP SVILUPPO (DA COMPLETARE)
+
+### **In Breve Termine**
+- [ ] **Google Wallet API Integration**: Passare dal pulsante placeholder alla generazione reale del file JWT via Edge Function.
+- [ ] **Pagamenti Online**: Integrazione con Stripe per l'acquisto di Promo Cards direttamente dall'area utente.
+- [ ] **Email Service**: Completare il `TODO` in `NewBookingModal` usando il servizio `send-email-notification` (Supabase Edge Function).
+
+### **In Lungo Termine**
+- [ ] **AI Reservation Assistant**: Espansione del Bot WhatsApp/Voice per gestire prenotazioni in linguaggio naturale sincronizzate con `court_availability`.
+- [ ] **Gestore Tornei**: Modulo per creare e gestire campionati sociali e tornei lampo.
+
+---
+
+## 🛠️ 6. MANUTENZIONE & SVILUPPO
+
+### **Sincronizzazione Contesto**
+Ogni volta che viene effettuata una modifica strutturale (nuovi file, nuove tabelle DB, cambi logica):
+1. Aggiornare le sezioni pertinenti di questo file.
+2. Eseguire `node scripts/sync_context.js` per aggiornare il timestamp.
+
+### **Workflow Git**
+- I commit devono essere descrittivi (es. `feat: added google wallet button`, `fix: corrected time format in calendar`).
+- Sincronizzare sempre prima di iniziare una nuova sessione di coding con un'AI per garantire che il contesto sia aggiornato.
+
+---
+*Ultimo Aggiornamento: 2025-12-27*

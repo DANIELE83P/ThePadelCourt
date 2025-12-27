@@ -22,6 +22,10 @@ import YourReservations from "./components/UserProfile/YourReservations.jsx";
 import UserCards from "./pages/UserCards.jsx"; // Enhanced version with tabs
 import Bookk from "./components/Home/bookk.jsx";
 import ForcePasswordChange from "./pages/ForcePasswordChange.jsx";
+import MatchesPage from "./pages/MatchesPage.jsx";
+import TournamentsPage from "./pages/TournamentsPage.jsx";
+import TournamentDetailPage from "./pages/TournamentDetailPage.jsx";
+import LeaderboardPage from "./pages/LeaderboardPage.jsx";
 
 const router = createBrowserRouter([
   // Owner Dashboard - Standalone route (no navbar/footer)
@@ -59,6 +63,30 @@ const router = createBrowserRouter([
       {
         path: "court/:id",
         element: <Bookk />,
+      },
+      {
+        path: "ranking",
+        element: (
+          <ProtectedRoute>
+            <LeaderboardPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "matches",
+        element: (
+          <ProtectedRoute>
+            <MatchesPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "tournaments",
+        element: (
+          <ProtectedRoute>
+            <TournamentsPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "force-password-change",

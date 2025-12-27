@@ -39,6 +39,12 @@ const menuSections = [
         ]
     },
     {
+        title: "Competizioni",
+        items: [
+            { id: "tournaments", label: "Gestione Tornei", icon: Award },
+        ]
+    },
+    {
         title: "Prenotazioni",
         items: [
             { id: "calendar", label: "Calendario", icon: Calendar },

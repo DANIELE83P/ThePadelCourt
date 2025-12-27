@@ -17,6 +17,7 @@ import ClosuresManager from "./ClosuresManager";
 import CourtPricingManager from "./CourtPricingManager";
 import RecurringBookingsManager from "./RecurringBookingsManager";
 import AdminUserManagement from "./AdminUserManagement";
+import TournamentManagement from "./TournamentManagement";
 
 const Owner = () => {
   const [activeSection, setActiveSection] = useState("home");
@@ -25,6 +26,8 @@ const Owner = () => {
     switch (activeSection) {
       case "home":
         return <OwnerHome onNavigate={setActiveSection} />;
+      case "tournaments":
+        return <TournamentManagement />;
       case "announcements":
         return <AnnouncementManager />;
       case "users":

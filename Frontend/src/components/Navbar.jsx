@@ -69,6 +69,31 @@ const Navbar = () => {
               {t('navbar_courts')}
             </NavLink>
             <NavLink
+              to="/ranking"
+              className={({ isActive }) =>
+                `flex items-center  text-lime-300 text-lg font-bold hover:text-green-600 transition duration-300 p-2 rounded-lg hover:bg-gray-300 ${isActive ? "bg-gray-500" : ""
+                }`
+              }
+            >
+              {t('navbar_ranking')}
+            </NavLink>
+            <NavLink
+              to="/matches"
+              className={({ isActive }) =>
+                `flex items-center text-lime-300 text-lg font-bold hover:text-green-600 transition duration-300 p-2 rounded-lg hover:bg-gray-300 ${isActive ? "bg-gray-500" : ""}`
+              }
+            >
+              {t('navbar_matches')}
+            </NavLink>
+            <NavLink
+              to="/tournaments"
+              className={({ isActive }) =>
+                `flex items-center text-lime-300 text-lg font-bold hover:text-green-600 transition duration-300 p-2 rounded-lg hover:bg-gray-300 ${isActive ? "bg-gray-500" : ""}`
+              }
+            >
+              {t('navbar_tournaments')}
+            </NavLink>
+            <NavLink
               to="/profile"
               className={({ isActive }) =>
                 `flex items-center  text-lime-300 text-lg font-bold hover:text-green-600 transition duration-300 p-2 rounded-lg hover:bg-gray-300 ${isActive ? "bg-gray-500" : ""
@@ -146,6 +171,34 @@ const Navbar = () => {
 
           >
             {t('navbar_courts')}
+          </NavLink>
+          <NavLink
+            to="/ranking"
+            onClick={() => setIsMenuOpen(false)}
+            className={({ isActive }) =>
+              `flex items-center  text-lime-300 text-lg font-bold hover:text-green-600 transition duration-300 p-2 rounded-lg hover:bg-gray-300 ${isActive ? "bg-gray-500" : ""
+              }`
+            }
+          >
+            {t('navbar_ranking')}
+          </NavLink>
+          <NavLink
+            to="/matches"
+            onClick={() => setIsMenuOpen(false)}
+            className={({ isActive }) =>
+              `flex items-center text-lime-300 text-lg font-bold hover:text-green-600 transition duration-300 p-2 rounded-lg hover:bg-gray-300 ${isActive ? "bg-gray-500" : ""}`
+            }
+          >
+            {t('navbar_matches')}
+          </NavLink>
+          <NavLink
+            to="/tournaments"
+            onClick={() => setIsMenuOpen(false)}
+            className={({ isActive }) =>
+              `flex items-center text-lime-300 text-lg font-bold hover:text-green-600 transition duration-300 p-2 rounded-lg hover:bg-gray-300 ${isActive ? "bg-gray-500" : ""}`
+            }
+          >
+            {t('navbar_tournaments')}
           </NavLink>
           <NavLink
             to="profile/settings"
