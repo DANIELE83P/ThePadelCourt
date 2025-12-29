@@ -75,7 +75,21 @@ const Bookk = () => {
       const startTime = parseInt(hoursData.open_time.split(':')[0]);
       const endTime = parseInt(hoursData.close_time.split(':')[0]);
 
+      // Time verification
+      const now = new Date();
+      const currentTotalMinutes = now.getHours() * 60 + now.getMinutes();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const todayStr = `${year}-${month}-${day}`;
+      const isToday = date === todayStr;
+
       for (let h = startTime; h < endTime; h++) {
+        // Filter past slots if today
+        if (isToday && (h * 60) < currentTotalMinutes) {
+          continue;
+        }
+
         const slotStart = `${h.toString().padStart(2, '0')}:00`;
         const slotEnd = `${(h + 1).toString().padStart(2, '0')}:00`;
 
@@ -241,7 +255,7 @@ const Bookk = () => {
               type="date"
               className="border-2 border-gray-200 rounded-lg p-3 w-full md:w-auto focus:border-blue-500 outline-none transition-colors"
               onChange={handleDateChange}
-              min={new Date().toISOString().split('T')[0]}
+              min={`${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`}
               required
             />
           </div>
@@ -260,8 +274,8 @@ const Bookk = () => {
                       key={slot.time_slot_start}
                       onClick={() => setSelectedTimeSlot(slot)}
                       className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 border-2 ${selectedTimeSlot?.time_slot_start === slot.time_slot_start
-                          ? "bg-[var(--owner-accent)] text-white border-[var(--owner-accent)] shadow-md"
-                          : "bg-white text-gray-700 border-gray-200 hover:border-[var(--owner-accent)] hover:text-[var(--owner-accent)]"
+                        ? "bg-[var(--owner-accent)] text-white border-[var(--owner-accent)] shadow-md"
+                        : "bg-white text-gray-700 border-gray-200 hover:border-[var(--owner-accent)] hover:text-[var(--owner-accent)]"
                         }`}
                       style={selectedTimeSlot?.time_slot_start === slot.time_slot_start ? { backgroundColor: '#00BFA5', borderColor: '#00BFA5' } : {}}
                     >

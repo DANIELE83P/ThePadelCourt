@@ -162,8 +162,8 @@ const ClubHoursManager = () => {
                                         <button
                                             onClick={() => handleUpdate(day.value, 'is_open', !dayHours.is_open)}
                                             className={`w-full px-4 py-2 rounded-lg font-medium transition-all ${dayHours.is_open
-                                                    ? 'bg-green-500/10 text-green-500 border-2 border-green-500'
-                                                    : 'bg-red-500/10 text-red-500 border-2 border-red-500'
+                                                ? 'bg-green-500/10 text-green-500 border-2 border-green-500'
+                                                : 'bg-red-500/10 text-red-500 border-2 border-red-500'
                                                 }`}
                                         >
                                             {dayHours.is_open ? (
@@ -185,7 +185,7 @@ const ClubHoursManager = () => {
                                             value={dayHours.open_time || ''}
                                             onChange={(e) => handleUpdate(day.value, 'open_time', e.target.value)}
                                             disabled={!dayHours.is_open}
-                                            className="w-full px-4 py-2 rounded-lg bg-[var(--owner-bg-secondary)] border border-[var(--owner-border)] disabled:opacity-50"
+                                            className="w-full px-4 py-2 rounded-lg bg-[var(--owner-bg-primary)] border border-[var(--owner-border)] disabled:opacity-50"
                                         />
                                     </div>
 
@@ -197,7 +197,7 @@ const ClubHoursManager = () => {
                                             value={dayHours.close_time || ''}
                                             onChange={(e) => handleUpdate(day.value, 'close_time', e.target.value)}
                                             disabled={!dayHours.is_open}
-                                            className="w-full px-4 py-2 rounded-lg bg-[var(--owner-bg-secondary)] border border-[var(--owner-border)] disabled:opacity-50"
+                                            className="w-full px-4 py-2 rounded-lg bg-[var(--owner-bg-primary)] border border-[var(--owner-border)] disabled:opacity-50"
                                         />
                                     </div>
 
@@ -211,7 +211,7 @@ const ClubHoursManager = () => {
                                                 onChange={(e) => handleUpdate(day.value, 'break_start', e.target.value || null)}
                                                 disabled={!dayHours.is_open}
                                                 placeholder="Inizio"
-                                                className="flex-1 px-2 py-2 text-sm rounded-lg bg-[var(--owner-bg-secondary)] border border-[var(--owner-border)] disabled:opacity-50"
+                                                className="flex-1 px-2 py-2 text-sm rounded-lg bg-[var(--owner-bg-primary)] border border-[var(--owner-border)] disabled:opacity-50"
                                             />
                                             <input
                                                 type="time"
@@ -219,7 +219,7 @@ const ClubHoursManager = () => {
                                                 onChange={(e) => handleUpdate(day.value, 'break_end', e.target.value || null)}
                                                 disabled={!dayHours.is_open}
                                                 placeholder="Fine"
-                                                className="flex-1 px-2 py-2 text-sm rounded-lg bg-[var(--owner-bg-secondary)] border border-[var(--owner-border)] disabled:opacity-50"
+                                                className="flex-1 px-2 py-2 text-sm rounded-lg bg-[var(--owner-bg-primary)] border border-[var(--owner-border)] disabled:opacity-50"
                                             />
                                         </div>
                                     </div>

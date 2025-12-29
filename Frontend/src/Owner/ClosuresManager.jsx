@@ -169,10 +169,10 @@ const ClosuresManager = () => {
                                 <div
                                     key={closure.id}
                                     className={`bg-[var(--owner-card-bg)] border rounded-xl p-5 transition-all ${active
-                                            ? 'border-red-500 bg-red-500/5'
-                                            : past
-                                                ? 'border-[var(--owner-border)] opacity-60'
-                                                : 'border-[var(--owner-border)] hover:border-[var(--owner-accent)]'
+                                        ? 'border-red-500 bg-red-500/5'
+                                        : past
+                                            ? 'border-[var(--owner-border)] opacity-60'
+                                            : 'border-[var(--owner-border)] hover:border-[var(--owner-accent)]'
                                         }`}
                                 >
                                     <div className="flex items-start justify-between gap-4">
@@ -250,8 +250,8 @@ const ClosuresManager = () => {
 
             {/* Modal */}
             {showModal && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-[var(--owner-card-bg)] rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div className="fixed inset-0 bg-[rgba(224,229,242,0.5)] backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-[var(--owner-card-bg)] rounded-[var(--owner-radius-lg)] p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-[var(--owner-shadow-premium)] border border-[var(--owner-border)]">
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="text-xl font-bold">
                                 {editingClosure ? 'Modifica Chiusura' : 'Nuova Chiusura'}
@@ -274,8 +274,8 @@ const ClosuresManager = () => {
                                             type="button"
                                             onClick={() => setForm({ ...form, closure_type: type.value })}
                                             className={`p-3 rounded-lg border-2 transition-all ${form.closure_type === type.value
-                                                    ? 'border-[var(--owner-accent)] bg-[var(--owner-accent)]/10'
-                                                    : 'border-[var(--owner-border)] hover:border-[var(--owner-accent)]/50'
+                                                ? 'border-[var(--owner-accent)] bg-[var(--owner-accent)]/10'
+                                                : 'border-[var(--owner-border)] hover:border-[var(--owner-accent)]/50'
                                                 }`}
                                         >
                                             <div className="text-2xl mb-1">{type.icon}</div>
@@ -291,7 +291,7 @@ const ClosuresManager = () => {
                                     type="text"
                                     value={form.title}
                                     onChange={(e) => setForm({ ...form, title: e.target.value })}
-                                    className="w-full px-4 py-2 rounded-lg bg-[var(--owner-bg-secondary)] border border-[var(--owner-border)]"
+                                    className="w-full px-4 py-2 rounded-lg bg-[var(--owner-bg-primary)] border border-[var(--owner-border)]"
                                     placeholder="es. Chiusura estiva"
                                     required
                                 />
@@ -302,7 +302,7 @@ const ClosuresManager = () => {
                                 <textarea
                                     value={form.description}
                                     onChange={(e) => setForm({ ...form, description: e.target.value })}
-                                    className="w-full px-4 py-2 rounded-lg bg-[var(--owner-bg-secondary)] border border-[var(--owner-border)] min-h-[80px]"
+                                    className="w-full px-4 py-2 rounded-lg bg-[var(--owner-bg-primary)] border border-[var(--owner-border)] min-h-[80px]"
                                     placeholder="Note aggiuntive..."
                                 />
                             </div>
@@ -314,7 +314,7 @@ const ClosuresManager = () => {
                                         type="date"
                                         value={form.start_date}
                                         onChange={(e) => setForm({ ...form, start_date: e.target.value })}
-                                        className="w-full px-4 py-2 rounded-lg bg-[var(--owner-bg-secondary)] border border-[var(--owner-border)]"
+                                        className="w-full px-4 py-2 rounded-lg bg-[var(--owner-bg-primary)] border border-[var(--owner-border)]"
                                         required
                                     />
                                 </div>
@@ -325,7 +325,7 @@ const ClosuresManager = () => {
                                         type="date"
                                         value={form.end_date}
                                         onChange={(e) => setForm({ ...form, end_date: e.target.value })}
-                                        className="w-full px-4 py-2 rounded-lg bg-[var(--owner-bg-secondary)] border border-[var(--owner-border)]"
+                                        className="w-full px-4 py-2 rounded-lg bg-[var(--owner-bg-primary)] border border-[var(--owner-border)]"
                                         required
                                     />
                                 </div>
@@ -347,7 +347,7 @@ const ClosuresManager = () => {
                                 <button
                                     type="button"
                                     onClick={() => setShowModal(false)}
-                                    className="px-4 py-2 rounded-lg bg-[var(--owner-bg-secondary)] hover:bg-[var(--owner-border)]"
+                                    className="px-4 py-2 rounded-lg bg-[var(--owner-bg-primary)] hover:bg-[var(--owner-border)]"
                                 >
                                     Annulla
                                 </button>

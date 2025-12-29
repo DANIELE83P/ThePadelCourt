@@ -1,10 +1,9 @@
 import { createNotification, NOTIFICATION_TYPES } from '../services/notificationService';
 import { emailService } from '../services/emailService';
 import { supabase } from '../lib/supabase';
+import { getAdminIds } from './adminHelper';
 
-/**
- * Check notification preferences before sending
- */
+
 const getPreferences = async (eventType) => {
     try {
         const { data } = await supabase
@@ -339,6 +338,23 @@ export const notify = {
                     action_url: '/ownerpage?section=analytics'
                 });
             }
+        }
+    },
+
+    /**
+     * Notify Admin of New Booking Request (Pending)
+     * Auto-fetches admin IDs
+     */
+    adminNewBookingRequest: async ({ courtName, userName, date, time }) => {
+        const adminIds = await getAdminIds();
+
+        for (const adminId of adminIds) {
+            await createNotification(adminId, {
+                type: NOTIFICATION_TYPES.BOOKING_PENDING,
+                title: '📅 Nuova Prenotazione da Confermare',
+                message: `${userName} ha richiesto ${courtName} per il ${date} alle ${time}`,
+                action_url: '/ownerpage?section=calendar'
+            });
         }
     }
 };

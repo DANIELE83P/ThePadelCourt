@@ -186,8 +186,8 @@ const CourtPricingManager = () => {
                                 key={court.id}
                                 onClick={() => setSelectedCourt(court)}
                                 className={`px-4 py-2 rounded-lg font-medium transition-all ${selectedCourt?.id === court.id
-                                        ? 'bg-[var(--owner-accent)] text-white'
-                                        : 'bg-[var(--owner-bg-secondary)] text-[var(--owner-text-secondary)] hover:bg-[var(--owner-border)]'
+                                    ? 'bg-[var(--owner-accent)] text-white'
+                                    : 'bg-[var(--owner-bg-secondary)] text-[var(--owner-text-secondary)] hover:bg-[var(--owner-border)]'
                                     }`}
                             >
                                 {court.name}
@@ -280,8 +280,8 @@ const CourtPricingManager = () => {
 
             {/* Modal */}
             {showModal && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-[var(--owner-card-bg)] rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div className="fixed inset-0 bg-[rgba(224,229,242,0.5)] backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-[var(--owner-card-bg)] rounded-[var(--owner-radius-lg)] p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-[var(--owner-shadow-premium)] border border-[var(--owner-border)]">
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="text-xl font-bold">
                                 {editingPricing ? 'Modifica Regola' : 'Nuova Regola Prezzo'}
@@ -350,8 +350,8 @@ const CourtPricingManager = () => {
                                             type="button"
                                             onClick={() => toggleDay(day)}
                                             className={`px-4 py-2 rounded-lg font-medium transition-all ${form.day_of_week?.includes(day)
-                                                    ? 'bg-[var(--owner-accent)] text-white'
-                                                    : 'bg-[var(--owner-bg-secondary)] hover:bg-[var(--owner-border)]'
+                                                ? 'bg-[var(--owner-accent)] text-white'
+                                                : 'bg-[var(--owner-bg-secondary)] hover:bg-[var(--owner-border)]'
                                                 }`}
                                         >
                                             {DAYS_MAP[day]}

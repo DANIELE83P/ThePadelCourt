@@ -127,8 +127,8 @@ const AssignCardModal = ({ isOpen, onClose, user, onSuccess }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-            <div className="bg-[var(--owner-card-bg)] w-full max-w-lg rounded-2xl shadow-2xl border border-[var(--owner-border)] flex flex-col max-h-[90vh]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(224,229,242,0.5)] backdrop-blur-sm p-4">
+            <div className="bg-[var(--owner-card-bg)] w-full max-w-lg rounded-[var(--owner-radius-lg)] shadow-[var(--owner-shadow-premium)] border border-[var(--owner-border)] flex flex-col max-h-[90vh]">
 
                 {/* Header */}
                 <div className="flex justify-between items-center p-6 border-b border-[var(--owner-border)]">

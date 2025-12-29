@@ -160,17 +160,27 @@ const Proj = () => {
       // Helper function to generate time slots
       const generateTimeSlots = (start, end) => {
         const slots = [];
-        for (let hour = start; hour < end; hour++) {
-          const startTime =
-            hour < 12
-              ? `${hour === 0 ? 12 : hour}:00 AM`
-              : `${hour === 12 ? 12 : hour - 12}:00 PM`;
-          const nextHour = hour + 1;
-          const endTime =
-            nextHour < 12
-              ? `${nextHour === 0 ? 12 : nextHour}:00 AM`
-              : `${nextHour === 12 ? 12 : nextHour - 12}:00 PM`;
-          slots.push({ start: startTime, end: endTime });
+        const duration = 90;
+        const interval = 30;
+
+        let currentMin = start * 60;
+        const endMin = end * 60;
+
+        const formatTime = (totalMin) => {
+          const h = Math.floor(totalMin / 60);
+          const m = totalMin % 60;
+          const ampm = h >= 12 ? 'PM' : 'AM';
+          const h12 = h % 12 || 12;
+          const mStr = m.toString().padStart(2, '0');
+          return `${h12}:${mStr} ${ampm}`;
+        };
+
+        while (currentMin + duration <= endMin) {
+          slots.push({
+            start: formatTime(currentMin),
+            end: formatTime(currentMin + duration)
+          });
+          currentMin += interval;
         }
         return slots;
       };

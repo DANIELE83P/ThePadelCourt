@@ -186,6 +186,9 @@ export const emailService = {
     /**
      * Send recurring booking confirmation
      */
+    /**
+     * Send recurring booking confirmation
+     */
     sendRecurringBookingConfirmation: async ({ email, firstName, courtName, dayOfWeek, time, startDate, endDate }) => {
         return await sendTemplateEmail('recurring_booking_confirmed', email, {
             firstName,
@@ -196,6 +199,23 @@ export const emailService = {
             endDate: endDate || 'Illimitata',
             reservationsUrl: window.location.origin + '/profile/reservations',
             clubName: 'The Padel Court'
+        });
+    },
+
+    /**
+     * Send new smart booking confirmation
+     */
+    sendBookingConfirmation: async ({ email, firstName, date, time, courtName, weatherInfo, googleMapsUrl }) => {
+        return await sendTemplateEmail('booking_confirmation', email, {
+            firstName,
+            date,
+            time,
+            courtName,
+            weatherInfo: weatherInfo || 'Nessuna info meteo disponibile',
+            googleMapsUrl: googleMapsUrl || 'https://maps.google.com/?q=The+Padel+Court+Club',
+            clubName: 'The Padel Court',
+            contactPhone: '+39 123 456 7890',
+            contactEmail: 'info@thepadelcourt.it'
         });
     }
 };

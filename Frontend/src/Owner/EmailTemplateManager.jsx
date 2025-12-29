@@ -189,7 +189,7 @@ const EmailTemplateManager = () => {
                                 <button
                                     type="button"
                                     onClick={() => setShowPreview(!showPreview)}
-                                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                    className="flex items-center gap-2 px-4 py-2 bg-[var(--owner-bg-secondary)] border border-[var(--owner-border)] text-[var(--owner-text-primary)] rounded-lg hover:border-[var(--owner-accent)] transition-all"
                                 >
                                     <Eye size={18} />
                                     {showPreview ? 'Nascondi' : 'Anteprima'}
@@ -234,8 +234,8 @@ const EmailTemplateManager = () => {
                             <div
                                 key={template.id}
                                 className={`p-6 rounded-xl border ${template.is_active
-                                        ? 'border-[var(--owner-border)] bg-[var(--owner-card-bg)]'
-                                        : 'border-gray-700 bg-gray-900/30 opacity-60'
+                                    ? 'border-[var(--owner-border)] bg-[var(--owner-card-bg)]'
+                                    : 'border-gray-200 bg-gray-50 opacity-60'
                                     }`}
                             >
                                 <div className="flex justify-between items-start mb-3">
@@ -243,7 +243,7 @@ const EmailTemplateManager = () => {
                                         <h3 className="font-bold text-lg text-[var(--owner-text-primary)]">{template.name}</h3>
                                         <p className="text-sm text-[var(--owner-text-muted)] mt-1">{template.description}</p>
                                     </div>
-                                    <span className={`text-xs font-bold px-2 py-1 rounded ${template.is_active ? 'bg-green-500/10 text-green-400' : 'bg-gray-500/10 text-gray-400'
+                                    <span className={`text-xs font-bold px-2 py-1 rounded ${template.is_active ? 'bg-green-500/10 text-green-600' : 'bg-gray-500/10 text-gray-500'
                                         }`}>
                                         {template.is_active ? 'ATTIVO' : 'DISATTIVO'}
                                     </span>

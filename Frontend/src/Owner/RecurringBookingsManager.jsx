@@ -396,8 +396,8 @@ const RecurringBookingsManager = () => {
 
             {/* Main Modal */}
             {showModal && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-[var(--owner-card-bg)] rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-xl">
+                <div className="fixed inset-0 bg-[rgba(224,229,242,0.5)] backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-[var(--owner-card-bg)] rounded-[var(--owner-radius-lg)] p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-[var(--owner-shadow-premium)] border border-[var(--owner-border)]">
                         <div className="flex items-center justify-between mb-6">
                             <h3 className="text-xl font-bold">
                                 {editingBooking ? 'Modifica Ricorrenza' : 'Nuova Prenotazione Ricorrente'}
@@ -433,7 +433,7 @@ const RecurringBookingsManager = () => {
                                                 type="text"
                                                 value={form.customer_name}
                                                 onChange={(e) => setForm({ ...form, customer_name: e.target.value })}
-                                                className="w-full px-3 py-2 rounded-md bg-white border border-gray-300 text-sm"
+                                                className="w-full px-3 py-2 rounded-lg bg-[var(--owner-bg-primary)] border border-gray-300 text-sm"
                                                 placeholder="Mario Rossi"
                                                 required={!selectedUser}
                                             />
@@ -444,7 +444,7 @@ const RecurringBookingsManager = () => {
                                                 type="tel"
                                                 value={form.customer_phone}
                                                 onChange={(e) => setForm({ ...form, customer_phone: e.target.value })}
-                                                className="w-full px-3 py-2 rounded-md bg-white border border-gray-300 text-sm"
+                                                className="w-full px-3 py-2 rounded-lg bg-[var(--owner-bg-primary)] border border-gray-300 text-sm"
                                                 placeholder="333 1234567"
                                             />
                                         </div>
@@ -458,7 +458,7 @@ const RecurringBookingsManager = () => {
                                     <select
                                         value={form.court_id}
                                         onChange={(e) => setForm({ ...form, court_id: e.target.value })}
-                                        className="w-full px-4 py-2.5 rounded-lg bg-[var(--owner-bg-secondary)] border border-[var(--owner-border)] appearance-none"
+                                        className="w-full px-4 py-2.5 rounded-lg bg-[var(--owner-bg-primary)] border border-[var(--owner-border)] appearance-none"
                                         required
                                     >
                                         <option value="">Seleziona...</option>
@@ -473,7 +473,7 @@ const RecurringBookingsManager = () => {
                                     <select
                                         value={form.day_of_week}
                                         onChange={(e) => setForm({ ...form, day_of_week: parseInt(e.target.value) })}
-                                        className="w-full px-4 py-2.5 rounded-lg bg-[var(--owner-bg-secondary)] border border-[var(--owner-border)] appearance-none"
+                                        className="w-full px-4 py-2.5 rounded-lg bg-[var(--owner-bg-primary)] border border-[var(--owner-border)] appearance-none"
                                         required
                                     >
                                         {Object.entries(DAYS_MAP).map(([day, name]) => (
@@ -500,7 +500,7 @@ const RecurringBookingsManager = () => {
                                     <select
                                         value={form.duration_minutes}
                                         onChange={(e) => setForm({ ...form, duration_minutes: parseInt(e.target.value) })}
-                                        className="w-full px-4 py-2.5 rounded-lg bg-[var(--owner-bg-secondary)] border border-[var(--owner-border)] appearance-none"
+                                        className="w-full px-4 py-2.5 rounded-lg bg-[var(--owner-bg-primary)] border border-[var(--owner-border)] appearance-none"
                                         required
                                     >
                                         <option value={60}>60 min</option>
@@ -516,7 +516,7 @@ const RecurringBookingsManager = () => {
                                     <select
                                         value={form.recurrence_pattern}
                                         onChange={(e) => setForm({ ...form, recurrence_pattern: e.target.value })}
-                                        className="w-full px-4 py-2.5 rounded-lg bg-[var(--owner-bg-secondary)] border border-[var(--owner-border)] appearance-none"
+                                        className="w-full px-4 py-2.5 rounded-lg bg-[var(--owner-bg-primary)] border border-[var(--owner-border)] appearance-none"
                                         required
                                     >
                                         <option value="weekly">Settimanale (ogni settimana)</option>
@@ -530,7 +530,7 @@ const RecurringBookingsManager = () => {
                                         type="date"
                                         value={form.start_date}
                                         onChange={(e) => setForm({ ...form, start_date: e.target.value })}
-                                        className="w-full px-4 py-2.5 rounded-lg bg-[var(--owner-bg-secondary)] border border-[var(--owner-border)]"
+                                        className="w-full px-4 py-2.5 rounded-lg bg-[var(--owner-bg-primary)] border border-[var(--owner-border)]"
                                         required
                                     />
                                 </div>
@@ -542,7 +542,7 @@ const RecurringBookingsManager = () => {
                                     type="date"
                                     value={form.end_date}
                                     onChange={(e) => setForm({ ...form, end_date: e.target.value })}
-                                    className="w-full px-4 py-2.5 rounded-lg bg-[var(--owner-bg-secondary)] border border-[var(--owner-border)]"
+                                    className="w-full px-4 py-2.5 rounded-lg bg-[var(--owner-bg-primary)] border border-[var(--owner-border)]"
                                 />
                                 <p className="text-xs text-[var(--owner-text-muted)] mt-1">Se vuoto, verranno generate prenotazioni per 3 mesi.</p>
                             </div>
@@ -552,7 +552,7 @@ const RecurringBookingsManager = () => {
                                 <textarea
                                     value={form.admin_notes}
                                     onChange={(e) => setForm({ ...form, admin_notes: e.target.value })}
-                                    className="w-full px-4 py-2 rounded-lg bg-[var(--owner-bg-secondary)] border border-[var(--owner-border)] min-h-[80px]"
+                                    className="w-full px-4 py-2 rounded-lg bg-[var(--owner-bg-primary)] border border-[var(--owner-border)] min-h-[80px]"
                                     placeholder="Note interne..."
                                 />
                             </div>
@@ -561,7 +561,7 @@ const RecurringBookingsManager = () => {
                                 <button
                                     type="button"
                                     onClick={() => setShowModal(false)}
-                                    className="px-4 py-2 rounded-lg bg-[var(--owner-bg-secondary)] hover:bg-[var(--owner-border)] font-medium"
+                                    className="px-4 py-2 rounded-lg bg-[var(--owner-bg-primary)] hover:bg-[var(--owner-border)] font-medium"
                                     disabled={saving}
                                 >
                                     Annulla
@@ -582,8 +582,8 @@ const RecurringBookingsManager = () => {
 
             {/* Conflict Modal */}
             {showConflictModal && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60] p-4">
-                    <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl">
+                <div className="fixed inset-0 bg-[rgba(224,229,242,0.5)] backdrop-blur-sm flex items-center justify-center z-[60] p-4">
+                    <div className="bg-[var(--owner-card-bg)] rounded-[var(--owner-radius-lg)] p-8 max-w-md w-full shadow-[var(--owner-shadow-premium)] border border-[var(--owner-border)]">
                         <div className="flex items-center gap-3 text-amber-600 mb-4">
                             <AlertTriangle size={32} />
                             <h3 className="text-xl font-bold">Conflitti Rilevati</h3>
@@ -605,7 +605,7 @@ const RecurringBookingsManager = () => {
                         <div className="flex justify-end gap-3">
                             <button
                                 onClick={() => setShowConflictModal(false)}
-                                className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700"
+                                className="px-4 py-2 rounded-lg bg-[var(--owner-bg-primary)] hover:bg-[var(--owner-border)] text-[var(--owner-text-secondary)] shadow-sm font-medium"
                             >
                                 Annulla
                             </button>

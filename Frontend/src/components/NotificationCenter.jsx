@@ -130,10 +130,10 @@ const NotificationCenter = () => {
             {/* Bell Icon */}
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors"
                 aria-label="Notifiche"
             >
-                <Bell size={22} className="text-gray-700 dark:text-gray-300" />
+                <Bell size={22} className="text-[var(--owner-text-secondary)]" />
                 {unreadCount > 0 && (
                     <span className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                         {unreadCount > 9 ? '9+' : unreadCount}
@@ -176,8 +176,8 @@ const NotificationCenter = () => {
                                         key={notification.id}
                                         onClick={() => handleNotificationClick(notification)}
                                         className={`p-4 cursor-pointer transition-all group ${notification.read
-                                                ? 'bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800'
-                                                : 'bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30'
+                                            ? 'bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800'
+                                            : 'bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30'
                                             }`}
                                     >
                                         <div className="flex items-start gap-3">

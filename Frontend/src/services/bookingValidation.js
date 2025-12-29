@@ -185,10 +185,95 @@ export const isSlotAvailable = async (courtId, date, timeStart, timeEnd) => {
     }
 };
 
+/**
+ * Check if ANY court of a specific type is available
+ * Returns true if at least one court is free
+ */
+export const isAnySlotAvailable = async (isIndoor, date, timeStart, timeEnd) => {
+    try {
+        // 1. Get all courts of this type
+        const { data: courts, error: courtsError } = await supabase
+            .from('courts')
+            .select('id')
+            .eq('is_indoor', isIndoor);
+
+        if (courtsError) throw courtsError;
+        if (!courts || courts.length === 0) return false;
+
+        const courtIds = courts.map(c => c.id);
+
+        // 2. Get all bookings for these courts at this time
+        const { data: bookings, error: bookingsError } = await supabase
+            .from('bookings')
+            .select('court_id')
+            .in('court_id', courtIds)
+            .eq('booking_date', date)
+            .neq('status', 'cancelled')
+            .or(`and(time_slot_start.lt.${timeEnd},time_slot_end.gt.${timeStart})`);
+
+        if (bookingsError) throw bookingsError;
+
+        // 3. Check if number of bookings < number of courts
+        // (This is a simplified check, ideally we confirm WHICH specific court is free, 
+        // but for "is ANY available" simply knowing count < total is sufficient IF we assume identical slots.
+        // However, to be safe and support "Assign Auto", we should find the set difference.)
+
+        const bookedCourtIds = bookings.map(b => b.court_id);
+        const availableCourtIds = courtIds.filter(id => !bookedCourtIds.includes(id));
+
+        return availableCourtIds.length > 0;
+
+    } catch (error) {
+        console.error('[BookingValidation] Error checking smart availability:', error);
+        return false;
+    }
+};
+
+/**
+ * Find the first available court ID for a specific type and time
+ */
+export const findFirstAvailableCourt = async (isIndoor, date, timeStart, timeEnd) => {
+    try {
+        // 1. Get all courts of this type
+        const { data: courts, error: courtsError } = await supabase
+            .from('courts')
+            .select('id')
+            .eq('is_indoor', isIndoor);
+
+        if (courtsError) throw courtsError;
+        if (!courts || courts.length === 0) return null;
+
+        const courtIds = courts.map(c => c.id);
+
+        // 2. Get booked courts
+        const { data: bookings, error: bookingsError } = await supabase
+            .from('bookings')
+            .select('court_id')
+            .in('court_id', courtIds)
+            .eq('booking_date', date)
+            .neq('status', 'cancelled')
+            .or(`and(time_slot_start.lt.${timeEnd},time_slot_end.gt.${timeStart})`);
+
+        if (bookingsError) throw bookingsError;
+
+        const bookedCourtIds = bookings.map(b => b.court_id);
+
+        // 3. Find first free court
+        const firstFree = courtIds.find(id => !bookedCourtIds.includes(id));
+        return firstFree || null;
+
+    } catch (error) {
+        console.error('[BookingValidation] Error finding available court:', error);
+        return null;
+    }
+};
+
 export default {
     validateBookingSlot,
     getClubHours,
     getActiveClosures,
     getApplicablePricing,
-    isSlotAvailable
+    isSlotAvailable,
+    isAnySlotAvailable,
+    findFirstAvailableCourt
 };

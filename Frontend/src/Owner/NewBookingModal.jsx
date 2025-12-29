@@ -3,7 +3,7 @@ import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../Contexts/AuthContext";
 import { toast } from "react-hot-toast";
-import { Search, X, Mail, MessageSquare, User, Users } from "lucide-react";
+import { Search, X, Mail, MessageSquare, User, Users, Plus } from "lucide-react";
 
 export default function NewBookingModal({ isOpen, close, slot, courtName, onSuccess }) {
     const { user } = useAuth();
@@ -182,20 +182,20 @@ export default function NewBookingModal({ isOpen, close, slot, courtName, onSucc
     if (showConfirmation) {
         return (
             <Dialog open={isOpen} onClose={() => { }} className="relative z-50">
-                <div className="fixed inset-0 bg-black/50" aria-hidden="true" />
+                <div className="fixed inset-0 bg-[rgba(224,229,242,0.5)] backdrop-blur-sm" aria-hidden="true" />
                 <div className="fixed inset-0 flex items-center justify-center p-4">
-                    <DialogPanel className="w-full max-w-md rounded-xl bg-[var(--owner-card-bg)] border border-[var(--owner-border)] p-6 shadow-2xl">
+                    <DialogPanel className="w-full max-w-md rounded-[var(--owner-radius-lg)] bg-[var(--owner-card-bg)] border-none p-8 shadow-[var(--owner-shadow-premium)]">
                         <DialogTitle className="text-xl font-bold text-[var(--owner-text-primary)] mb-4">
                             Invia Conferma Prenotazione
                         </DialogTitle>
-                        <p className="text-[var(--owner-text-secondary)] mb-6">
+                        <p className="text-[var(--owner-text-secondary)] mb-6 font-medium">
                             Vuoi inviare la conferma della prenotazione a <strong>{players[0].name}</strong>?
                         </p>
                         <div className="space-y-3">
                             {players[0].email && (
                                 <button
                                     onClick={() => sendConfirmation('email')}
-                                    className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-3 px-4 flex items-center justify-center gap-2 font-medium transition-colors"
+                                    className="w-full bg-[var(--owner-accent)] hover:bg-[var(--owner-accent-hover)] text-white rounded-2xl py-3 px-4 flex items-center justify-center gap-2 font-bold transition-all shadow-[var(--owner-glow-accent)]"
                                 >
                                     <Mail className="w-5 h-5" />
                                     Invia via Email ({players[0].email})
@@ -204,7 +204,7 @@ export default function NewBookingModal({ isOpen, close, slot, courtName, onSucc
                             {players[0].phone && (
                                 <button
                                     onClick={() => sendConfirmation('sms')}
-                                    className="w-full bg-green-600 hover:bg-green-700 text-white rounded-lg py-3 px-4 flex items-center justify-center gap-2 font-medium transition-colors"
+                                    className="w-full bg-[#01B574] hover:bg-[#00925d] text-white rounded-2xl py-3 px-4 flex items-center justify-center gap-2 font-bold transition-all shadow-lg shadow-green-500/30"
                                 >
                                     <MessageSquare className="w-5 h-5" />
                                     Invia via SMS ({players[0].phone})
@@ -212,7 +212,7 @@ export default function NewBookingModal({ isOpen, close, slot, courtName, onSucc
                             )}
                             <button
                                 onClick={skipConfirmation}
-                                className="w-full bg-[var(--owner-bg-secondary)] hover:bg-[var(--owner-bg-primary)] text-[var(--owner-text-primary)] border border-[var(--owner-border)] rounded-lg py-3 px-4 font-medium transition-colors"
+                                className="w-full bg-[var(--owner-bg-primary)] hover:bg-gray-100 text-[var(--owner-text-primary)] rounded-2xl py-3 px-4 font-bold transition-colors"
                             >
                                 Salta, Non Inviare
                             </button>
@@ -225,131 +225,168 @@ export default function NewBookingModal({ isOpen, close, slot, courtName, onSucc
 
     return (
         <Dialog open={isOpen} onClose={resetAndClose} className="relative z-50">
-            <div className="fixed inset-0 bg-black/50" aria-hidden="true" />
+            <div className="fixed inset-0 bg-[rgba(224,229,242,0.5)] backdrop-blur-sm" aria-hidden="true" />
             <div className="fixed inset-0 flex items-center justify-center p-4">
-                <DialogPanel className="w-full max-w-2xl rounded-xl bg-[var(--owner-card-bg)] border border-[var(--owner-border)] p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
-                    <DialogTitle className="text-2xl font-bold text-[var(--owner-text-primary)] mb-2">
-                        Prenotazione Manuale
-                    </DialogTitle>
+                <DialogPanel className="w-full max-w-2xl rounded-[var(--owner-radius-lg)] bg-[var(--owner-card-bg)] border-none p-0 shadow-[var(--owner-shadow-premium)] max-h-[90vh] overflow-hidden flex flex-col">
+                    {/* Header */}
+                    <div className="p-8 border-b border-[var(--owner-border)] flex items-center justify-between bg-white">
+                        <div>
+                            <DialogTitle className="text-2xl font-bold text-[var(--owner-text-primary)]">Prenotazione Manuale</DialogTitle>
+                            <p className="text-sm text-[var(--owner-text-secondary)] mt-1 font-medium">Stai creando una prenotazione offline come amministratore.</p>
+                        </div>
+                        <button onClick={resetAndClose} aria-label="Close" className="p-2 hover:bg-gray-100 rounded-full transition-colors text-[var(--owner-text-secondary)]">
+                            <X className="w-6 h-6" />
+                        </button>
+                    </div>
 
-                    {slot && (
-                        <div className="mb-6 p-4 bg-[var(--owner-bg-secondary)] border border-[var(--owner-border)] rounded-lg">
-                            <div className="grid grid-cols-3 gap-4 text-sm">
-                                <div>
-                                    <span className="text-[var(--owner-text-muted)] block mb-1">Campo</span>
-                                    <span className="text-[var(--owner-text-primary)] font-semibold">{courtName}</span>
+                    <div className="flex-1 overflow-y-auto p-8 space-y-8">
+                        {slot && (
+                            <div className="p-6 bg-gradient-to-br from-[var(--owner-accent)]/5 to-[var(--owner-accent)]/0 border border-[var(--owner-accent)]/10 rounded-2xl relative overflow-hidden group">
+                                <div className="absolute right-[-20px] top-[-20px] opacity-[0.03] group-hover:scale-110 transition-transform duration-500 text-[var(--owner-accent)]">
+                                    <Users size={120} />
                                 </div>
-                                <div>
-                                    <span className="text-[var(--owner-text-muted)] block mb-1">Data</span>
-                                    <span className="text-[var(--owner-text-primary)] font-semibold">{slot.data.available_date}</span>
-                                </div>
-                                <div>
-                                    <span className="text-[var(--owner-text-muted)] block mb-1">Orario</span>
-                                    <span className="text-[var(--owner-text-primary)] font-semibold">{slot.start} - {slot.end}</span>
+                                <div className="grid grid-cols-3 gap-6 relative z-10">
+                                    <div>
+                                        <span className="text-[var(--owner-text-secondary)] text-[10px] font-bold uppercase tracking-wider block mb-1">Campo</span>
+                                        <span className="text-[var(--owner-text-primary)] font-bold truncate block text-lg">{courtName}</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-[var(--owner-text-secondary)] text-[10px] font-bold uppercase tracking-wider block mb-1">Data</span>
+                                        <span className="text-[var(--owner-text-primary)] font-bold block text-lg">{new Date(slot.data.available_date).toLocaleDateString()}</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-[var(--owner-text-secondary)] text-[10px] font-bold uppercase tracking-wider block mb-1">Orario</span>
+                                        <div className="flex items-center gap-1">
+                                            <span className="text-[var(--owner-accent)] font-black text-xl">{slot.start}</span>
+                                            <span className="text-[var(--owner-text-secondary)] font-medium">-</span>
+                                            <span className="text-[var(--owner-text-primary)] font-bold text-xl">{slot.end}</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    )}
+                        )}
 
-                    {/* Search Bar */}
-                    <div className="mb-6">
-                        <label className="block text-sm font-semibold text-[var(--owner-text-secondary)] mb-2 uppercase tracking-wide">
-                            <Search className="w-4 h-4 inline mr-1" />
-                            Cerca Giocatore in Anagrafica
-                        </label>
-                        <div className="relative">
-                            <input
-                                type="text"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="Cerca per nome o email..."
-                                className="w-full bg-[var(--owner-bg-primary)] border border-[var(--owner-border)] rounded-lg p-3 text-[var(--owner-text-primary)] focus:border-[var(--owner-accent)] outline-none"
-                            />
-                            {searching && (
-                                <div className="absolute right-3 top-3 text-[var(--owner-text-muted)]">
-                                    Ricerca...
+                        {/* Search Bar */}
+                        <section>
+                            <label className="text-xs font-bold text-[var(--owner-accent)] uppercase tracking-widest mb-4 block px-1">
+                                <Search className="w-3 h-3 inline mr-1 -mt-0.5" />
+                                Ricerca Anagrafica
+                            </label>
+                            <div className="relative">
+                                <input
+                                    type="text"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    placeholder="Cerca per nome, email o telefono..."
+                                    className="w-full bg-[var(--owner-bg-primary)] border-transparent rounded-2xl p-4 pl-12 text-[var(--owner-text-primary)] focus:bg-white focus:border-[var(--owner-accent)] focus:ring-1 focus:ring-[var(--owner-accent)] outline-none transition-all font-medium"
+                                />
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--owner-text-secondary)] w-5 h-5" />
+                                {searching && (
+                                    <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                                        <svg className="animate-spin h-5 w-5 text-[var(--owner-accent)]" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                    </div>
+                                )}
+                            </div>
+                            {searchResults.length > 0 && (
+                                <div className="mt-3 bg-white border border-[var(--owner-border)] rounded-2xl overflow-hidden shadow-[var(--owner-shadow-soft)] animate-in fade-in slide-in-from-top-2 duration-300 z-20 relative">
+                                    {searchResults.map((result) => (
+                                        <div
+                                            key={result.id}
+                                            onClick={() => selectUser(result, 0)}
+                                            className="p-4 hover:bg-[var(--owner-bg-primary)] cursor-pointer border-b border-[var(--owner-border)] last:border-b-0 transition-all flex items-center justify-between group"
+                                        >
+                                            <div>
+                                                <div className="font-bold text-[var(--owner-text-primary)] group-hover:text-[var(--owner-accent)] transition-colors">{result.full_name}</div>
+                                                <div className="text-xs text-[var(--owner-text-secondary)] flex gap-4 mt-1 font-medium">
+                                                    <span className="flex items-center gap-1"><Mail size={12} /> {result.email}</span>
+                                                    {result.phone && <span>📞 {result.phone}</span>}
+                                                </div>
+                                            </div>
+                                            <div className="bg-[var(--owner-accent)]/10 text-[var(--owner-accent)] p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-all">
+                                                <Plus size={16} />
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
                             )}
-                        </div>
-                        {searchResults.length > 0 && (
-                            <div className="mt-2 bg-[var(--owner-bg-secondary)] border border-[var(--owner-border)] rounded-lg overflow-hidden">
-                                {searchResults.map((result, idx) => (
-                                    <div
-                                        key={result.id}
-                                        onClick={() => selectUser(result, 0)}
-                                        className="p-3 hover:bg-[var(--owner-accent)]/10 cursor-pointer border-b border-[var(--owner-border)] last:border-b-0 transition-colors"
-                                    >
-                                        <div className="font-semibold text-[var(--owner-text-primary)]">{result.full_name}</div>
-                                        <div className="text-sm text-[var(--owner-text-muted)]">{result.email}</div>
+                        </section>
+
+                        {/* Players */}
+                        <section className="space-y-4">
+                            <label className="text-xs font-bold text-[var(--owner-accent)] uppercase tracking-widest mb-4 block px-1">Giocatori</label>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {players.map((player, index) => (
+                                    <div key={index} className={`p-4 rounded-2xl border transition-all ${player.name ? 'bg-[var(--owner-bg-primary)] border-[var(--owner-accent)]' : 'bg-white border-[var(--owner-border)] hover:border-gray-200'}`}>
+                                        <div className="flex items-center justify-between mb-3">
+                                            <span className="text-[10px] font-bold text-[var(--owner-text-secondary)] uppercase tracking-tighter flex items-center gap-2">
+                                                {index === 0 ? <User size={12} className="text-[var(--owner-accent)]" /> : <Users size={12} />}
+                                                Giocatore {index + 1} {index === 0 && <span className="text-red-500 font-black">*</span>}
+                                            </span>
+                                            {player.name && (
+                                                <button onClick={() => removePlayer(index)} className="text-[var(--owner-text-secondary)] hover:text-red-500 p-1 hover:bg-red-50 rounded-full transition-all">
+                                                    <X size={14} />
+                                                </button>
+                                            )}
+                                        </div>
+                                        <div className="space-y-3">
+                                            <input
+                                                type="text"
+                                                value={player.name}
+                                                onChange={(e) => updatePlayer(index, 'name', e.target.value)}
+                                                placeholder="Nome Completo"
+                                                className="w-full bg-transparent border-b border-[var(--owner-border)] py-2 text-[var(--owner-text-primary)] focus:border-[var(--owner-accent)] outline-none text-sm transition-all placeholder:text-[var(--owner-text-secondary)]/50 font-bold"
+                                                required={index === 0}
+                                            />
+                                            {index === 0 && (
+                                                <div className="grid grid-cols-1 gap-2 pt-1">
+                                                    <div className="flex items-center gap-2 text-xs text-[var(--owner-text-secondary)]">
+                                                        <Mail size={12} />
+                                                        <input
+                                                            type="email"
+                                                            value={player.email}
+                                                            onChange={(e) => updatePlayer(index, 'email', e.target.value)}
+                                                            placeholder="Indirizzo Email"
+                                                            className="flex-1 bg-transparent outline-none focus:text-[var(--owner-text-primary)] font-medium"
+                                                        />
+                                                    </div>
+                                                    <div className="flex items-center gap-2 text-xs text-[var(--owner-text-secondary)]">
+                                                        <MessageSquare size={12} />
+                                                        <input
+                                                            type="tel"
+                                                            value={player.phone}
+                                                            onChange={(e) => updatePlayer(index, 'phone', e.target.value)}
+                                                            placeholder="Numero Telefono"
+                                                            className="flex-1 bg-transparent outline-none focus:text-[var(--owner-text-primary)] font-medium"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 ))}
                             </div>
-                        )}
+                        </section>
                     </div>
 
-                    {/* Players */}
-                    <div className="space-y-4 mb-6">
-                        {players.map((player, index) => (
-                            <div key={index} className="p-4 bg-[var(--owner-bg-secondary)] border border-[var(--owner-border)] rounded-lg">
-                                <div className="flex items-center justify-between mb-3">
-                                    <label className="text-sm font-bold text-[var(--owner-text-secondary)] uppercase tracking-wide flex items-center gap-2">
-                                        {index === 0 ? <User className="w-4 h-4" /> : <Users className="w-4 h-4" />}
-                                        Giocatore {index + 1} {index === 0 && <span className="text-red-500">*</span>}
-                                    </label>
-                                    {index > 0 && player.name && (
-                                        <button
-                                            onClick={() => removePlayer(index)}
-                                            className="text-red-500 hover:text-red-400 p-1"
-                                        >
-                                            <X className="w-4 h-4" />
-                                        </button>
-                                    )}
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                    <input
-                                        type="text"
-                                        value={player.name}
-                                        onChange={(e) => updatePlayer(index, 'name', e.target.value)}
-                                        placeholder="Nome Cognome"
-                                        className="bg-[var(--owner-bg-primary)] border border-[var(--owner-border)] rounded-lg p-2 text-[var(--owner-text-primary)] focus:border-[var(--owner-accent)] outline-none"
-                                        required={index === 0}
-                                    />
-                                    {index === 0 && (
-                                        <>
-                                            <input
-                                                type="email"
-                                                value={player.email}
-                                                onChange={(e) => updatePlayer(index, 'email', e.target.value)}
-                                                placeholder="Email (opzionale)"
-                                                className="bg-[var(--owner-bg-primary)] border border-[var(--owner-border)] rounded-lg p-2 text-[var(--owner-text-primary)] focus:border-[var(--owner-accent)] outline-none"
-                                            />
-                                            <input
-                                                type="tel"
-                                                value={player.phone}
-                                                onChange={(e) => updatePlayer(index, 'phone', e.target.value)}
-                                                placeholder="Telefono (opzionale)"
-                                                className="bg-[var(--owner-bg-primary)] border border-[var(--owner-border)] rounded-lg p-2 text-[var(--owner-text-primary)] focus:border-[var(--owner-accent)] outline-none"
-                                            />
-                                        </>
-                                    )}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="flex justify-end gap-3">
+                    {/* Footer */}
+                    <div className="p-8 border-t border-[var(--owner-border)] bg-gray-50 flex gap-4 mt-auto">
                         <button
                             onClick={resetAndClose}
-                            className="px-6 py-2.5 text-[var(--owner-text-secondary)] hover:bg-[var(--owner-bg-secondary)] rounded-lg font-medium transition-colors"
+                            className="flex-1 py-4 bg-white border border-[var(--owner-border)] rounded-2xl text-sm font-bold text-[var(--owner-text-secondary)] hover:bg-gray-50 transition-all shadow-sm"
                         >
                             Annulla
                         </button>
                         <button
                             onClick={handleConfirm}
                             disabled={loading || !players[0].name.trim()}
-                            className="bg-[var(--owner-accent)] hover:bg-[var(--owner-accent-hover)] text-white px-6 py-2.5 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            className="flex-[2] bg-[var(--owner-accent)] hover:bg-[var(--owner-accent-hover)] text-white py-4 rounded-2xl font-bold text-sm shadow-[var(--owner-glow-accent)] hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                         >
-                            {loading ? "Creazione..." : "Conferma Prenotazione"}
+                            {loading ? (
+                                <span className="flex items-center justify-center gap-2">
+                                    <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                    Creazione...
+                                </span>
+                            ) : "Conferma Prenotazione"}
                         </button>
                     </div>
                 </DialogPanel>

@@ -11,6 +11,7 @@ import {
     Settings,
     LogOut,
     ChevronLeft,
+    ChevronDown,
     Menu,
     X,
     ListOrdered,
@@ -84,9 +85,11 @@ const menuSections = [
 const OwnerLayout = ({ children, activeSection, setActiveSection }) => {
     const navigate = useNavigate();
     const { user, signOut } = useAuth();
-    const { theme, toggleTheme } = useTheme();
+    // Theme context is no longer needed as we enforce light theme
+    // const { theme, toggleTheme } = useTheme(); 
     const [collapsed, setCollapsed] = useState(false);
     const [mobileOpen, setMobileOpen] = useState(false);
+    const [collapsedSections, setCollapsedSections] = useState({});
 
     // Run daily scheduler on mount
     useEffect(() => {
@@ -118,6 +121,13 @@ const OwnerLayout = ({ children, activeSection, setActiveSection }) => {
         setMobileOpen(false);
     };
 
+    const toggleSection = (sectionTitle) => {
+        setCollapsedSections(prev => ({
+            ...prev,
+            [sectionTitle]: !prev[sectionTitle]
+        }));
+    };
+
     const getSectionTitle = () => {
         for (const section of menuSections) {
             const item = section.items.find(i => i.id === activeSection);
@@ -129,7 +139,7 @@ const OwnerLayout = ({ children, activeSection, setActiveSection }) => {
     const userInitial = user?.email?.charAt(0).toUpperCase() || "U";
 
     return (
-        <div className={`owner-layout theme-${theme}`}>
+        <div className={`owner-layout`}>
             {/* Mobile Overlay */}
             <div
                 className={`owner-overlay ${mobileOpen ? 'visible' : ''}`}
@@ -156,24 +166,36 @@ const OwnerLayout = ({ children, activeSection, setActiveSection }) => {
                 {/* Navigation */}
                 <nav className="owner-sidebar-nav">
                     {menuSections.map((section, idx) => (
-                        <div key={idx} className="owner-menu-section">
-                            <div className="owner-menu-section-title">{section.title}</div>
-                            {section.items.map((item) => {
-                                const Icon = item.icon;
-                                return (
-                                    <div
-                                        key={item.id}
-                                        className={`owner-menu-item ${activeSection === item.id ? 'active' : ''}`}
-                                        onClick={() => handleMenuClick(item.id)}
-                                        data-tooltip={item.label}
-                                    >
-                                        <div className="owner-menu-item-icon">
-                                            <Icon />
-                                        </div>
-                                        <span className="owner-menu-item-text">{item.label}</span>
+                        <div key={idx} className={`owner-menu-section ${collapsedSections[section.title] ? 'collapsed' : ''}`}>
+                            <div
+                                className="owner-menu-section-header"
+                                onClick={() => toggleSection(section.title)}
+                            >
+                                <div className="owner-menu-section-title">{section.title}</div>
+                                {!collapsed && (
+                                    <div className="owner-menu-section-toggle">
+                                        <ChevronDown size={14} />
                                     </div>
-                                );
-                            })}
+                                )}
+                            </div>
+                            <div className="owner-menu-section-items">
+                                {section.items.map((item) => {
+                                    const Icon = item.icon;
+                                    return (
+                                        <div
+                                            key={item.id}
+                                            className={`owner-menu-item ${activeSection === item.id ? 'active' : ''}`}
+                                            onClick={() => handleMenuClick(item.id)}
+                                            data-tooltip={item.label}
+                                        >
+                                            <div className="owner-menu-item-icon">
+                                                <Icon />
+                                            </div>
+                                            <span className="owner-menu-item-text">{item.label}</span>
+                                        </div>
+                                    );
+                                })}
+                            </div>
                         </div>
                     ))}
                 </nav>
@@ -202,23 +224,30 @@ const OwnerLayout = ({ children, activeSection, setActiveSection }) => {
                         >
                             <Menu />
                         </button>
-                        <h1 className="owner-header-title">{getSectionTitle()}</h1>
+                        <h1 className="owner-header-title">
+                            <span className="text-xs font-medium text-[var(--owner-text-secondary)] uppercase tracking-wide">Pagine / {getSectionTitle()}</span>
+                            <span>{getSectionTitle()}</span>
+                        </h1>
                     </div>
 
-                    <div className="owner-header-user">
-                        <NotificationCenter />
-                        <button
-                            onClick={toggleTheme}
-                            className="p-2 rounded-lg hover:bg-white/10 border border-[var(--owner-border)] text-[var(--owner-text-secondary)] hover:text-[var(--owner-text-primary)] transition-colors"
-                            aria-label="Toggle Theme"
-                        >
-                            {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
-                        </button>
-                        <div className="owner-header-avatar">{userInitial}</div>
-                        <button className="owner-header-logout" onClick={handleLogout}>
-                            <LogOut size={16} className="inline mr-2" />
-                            Esci
-                        </button>
+                    <div className="flex items-center gap-3">
+                        {/* Notification Bubble */}
+                        <div className="bg-white h-11 w-11 flex items-center justify-center rounded-full shadow-[var(--owner-shadow-soft)] border border-white">
+                            <NotificationCenter />
+                        </div>
+
+                        {/* Profile Pill */}
+                        <div className="owner-header-user">
+                            <div className="owner-header-avatar shadow-md ring-2 ring-white">{userInitial}</div>
+
+                            <button
+                                className="p-2 hover:bg-gray-100 rounded-lg text-[var(--owner-text-secondary)] hover:text-red-500 transition-colors"
+                                onClick={handleLogout}
+                                title="Esci"
+                            >
+                                <LogOut size={20} />
+                            </button>
+                        </div>
                     </div>
                 </header>
 

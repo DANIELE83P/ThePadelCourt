@@ -45,7 +45,6 @@ export const runDailyScheduler = async (adminUserId) => {
             .from('scheduler_executions')
             .select('id')
             .eq('execution_date', today)
-            .eq('execution_date', today)
             .maybeSingle();
 
         if (existingExecution) {
@@ -181,8 +180,8 @@ export const runDailyScheduler = async (adminUserId) => {
         }
 
         // 3. Check promo cards expiring/expired
-        const { data: adminHelper } = await import('../utils/adminHelper.js');
-        const adminIds = await adminHelper.default.getAdminIds();
+        const adminHelper = await import('../utils/adminHelper.js');
+        const adminIds = await adminHelper.getAdminIds();
 
         const { data: promoCards } = await supabase
             .from('user_promo_cards')

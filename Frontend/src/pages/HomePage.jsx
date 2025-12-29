@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import ContectSection from "../components/Home/ContectSection";
 import MainSection from "../components/Home/MainSection";
 import TestMonialsSection from "../components/Home/TestMonialsSection";
+import NewsWidget from "../components/Home/NewsWidget";
 
 import { useTranslation } from "react-i18next";
 
@@ -50,6 +51,9 @@ export default function Home() {
       <div className="container mx-auto p-8">
         {/* Courts Section */}
         <MainSection />
+
+        {/* News Section */}
+        <NewsWidget />
 
         {/* Testimonials Section */}
         <TestMonialsSection />

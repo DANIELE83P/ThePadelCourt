@@ -97,7 +97,7 @@ const ClubSettings = () => {
                             value={formData.address}
                             onChange={handleChange}
                             placeholder="Via Roma 123, Milano"
-                            className="w-full rounded-md p-2 border border-[var(--owner-border)] bg-[var(--owner-bg-primary)] focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                            className="w-full"
                         />
                     </div>
                     <div>
@@ -108,7 +108,7 @@ const ClubSettings = () => {
                             value={formData.phone}
                             onChange={handleChange}
                             placeholder="+39 123 456 7890"
-                            className="w-full rounded-md p-2 border border-[var(--owner-border)] bg-[var(--owner-bg-primary)] focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                            className="w-full"
                         />
                     </div>
                     <div>
@@ -119,7 +119,7 @@ const ClubSettings = () => {
                             value={formData.email}
                             onChange={handleChange}
                             placeholder="info@tuoclub.it"
-                            className="w-full rounded-md p-2 border border-[var(--owner-border)] bg-[var(--owner-bg-primary)] focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                            className="w-full"
                         />
                     </div>
                     <div>
@@ -130,7 +130,7 @@ const ClubSettings = () => {
                             value={formData.map_url}
                             onChange={handleChange}
                             placeholder="https://www.google.com/maps/embed?..."
-                            className="w-full rounded-md p-2 border border-[var(--owner-border)] bg-[var(--owner-bg-primary)] focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                            className="w-full"
                         />
                     </div>
                     <div>
@@ -141,7 +141,7 @@ const ClubSettings = () => {
                             value={formData.city}
                             onChange={handleChange}
                             placeholder="Milano"
-                            className="w-full rounded-md p-2 border border-[var(--owner-border)] bg-[var(--owner-bg-primary)] focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                            className="w-full"
                         />
                     </div>
                     <div>
@@ -152,12 +152,12 @@ const ClubSettings = () => {
                             value={formData.country}
                             onChange={handleChange}
                             placeholder="Italia"
-                            className="w-full rounded-md p-2 border border-[var(--owner-border)] bg-[var(--owner-bg-primary)] focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                            className="w-full"
                         />
                     </div>
                 </div>
 
-                <div className="text-sm text-[var(--owner-text-muted)] mt-4 p-4 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                <div className="text-sm text-[var(--owner-text-muted)] mt-4 p-4 bg-[var(--owner-accent)]/5 rounded-2xl border border-[var(--owner-accent)]/10">
                     <p><strong>📍 Nota:</strong> Gli orari di apertura sono ora gestiti nella sezione <strong>Impostazioni → Orari Apertura</strong></p>
                 </div>
 
@@ -165,7 +165,7 @@ const ClubSettings = () => {
                     <button
                         type="submit"
                         disabled={saving}
-                        className="inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
+                        className="owner-btn-primary flex items-center justify-center gap-2"
                     >
                         {saving ? "Salvataggio..." : "Salva Impostazioni"}
                     </button>

@@ -144,7 +144,7 @@ const OwnerHome = ({ onNavigate }) => {
             </div>
 
             {/* Stats Grid */}
-            <div className="owner-stats-grid">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 {statsCards.map((stat, index) => {
                     const Icon = stat.icon;
                     return (
@@ -160,30 +160,32 @@ const OwnerHome = ({ onNavigate }) => {
             </div>
 
             {/* Quick Actions */}
-            <div>
-                <h3 className="text-lg font-semibold text-[var(--owner-text-primary)] mb-4">
+            <div className="owner-section-card mb-6">
+                <div className="owner-section-card-header">
                     Azioni Rapide
-                </h3>
-                <div className="owner-quick-actions">
-                    {quickActions.map((action, index) => {
-                        const Icon = action.icon;
-                        return (
-                            <div
-                                key={index}
-                                className="owner-quick-action"
-                                onClick={action.action}
-                            >
-                                <div className="owner-quick-action-icon">
-                                    <Icon />
+                </div>
+                <div className="owner-section-card-body">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        {quickActions.map((action, index) => {
+                            const Icon = action.icon;
+                            return (
+                                <div
+                                    key={index}
+                                    className="owner-quick-action"
+                                    onClick={action.action}
+                                >
+                                    <div className="owner-quick-action-icon">
+                                        <Icon />
+                                    </div>
+                                    <span className="owner-quick-action-text">{action.label}</span>
+                                    <ArrowRight
+                                        size={16}
+                                        className="ml-auto text-[var(--owner-text-muted)]"
+                                    />
                                 </div>
-                                <span className="owner-quick-action-text">{action.label}</span>
-                                <ArrowRight
-                                    size={16}
-                                    className="ml-auto text-[var(--owner-text-muted)]"
-                                />
-                            </div>
-                        );
-                    })}
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
 

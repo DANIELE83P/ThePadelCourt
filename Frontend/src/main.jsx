@@ -10,6 +10,7 @@ import LoginPage from "./pages/LoginPage.jsx";
 import Owner from "./Owner/owner.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx";
 import Home from "./pages/HomePage.jsx";
+import NewsPage from "./pages/NewsPage.jsx";
 import CourtPage from "./components/CourtPage/CourtPage.jsx";
 import { AuthProvider } from "./Contexts/AuthContext.jsx";
 import { ThemeProvider } from "./Contexts/ThemeContext.jsx";
@@ -57,6 +58,10 @@ const router = createBrowserRouter([
       {
         path: "/register",
         element: <RegisterPage />,
+      },
+      {
+        path: "news",
+        element: <NewsPage />,
       },
       {
         path: "courts",

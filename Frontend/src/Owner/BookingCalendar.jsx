@@ -153,7 +153,16 @@ const BookingCalendar = () => {
             // Combine and format
             const combined = [];
 
+            const now = new Date();
+            const todayStr = format(now, 'yyyy-MM-dd');
+            const currentMinutesNow = now.getHours() * 60 + now.getMinutes();
+
             availData.forEach(slot => {
+                // Filter out past slots if they are for today
+                if (slot.available_date === todayStr && timeToMinutes(slot.time_slot_start) < currentMinutesNow) {
+                    return;
+                }
+
                 combined.push({
                     id: `avail-${slot.id}`,
                     courtId: slot.court_id,
